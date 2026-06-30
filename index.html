@@ -7,7 +7,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Meal Swaps">
 <meta name="theme-color" content="#11161d">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%2316a34a'/%3E%3Ctext x='90' y='128' font-size='100' text-anchor='middle'%3E%F0%9F%A5%97%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon.png">
 <title>Meal Swaps</title>
 <style>
   :root{
@@ -26,6 +27,7 @@
   .wrap{max-width:520px; margin:0 auto; padding:0 16px}
   header{padding:max(20px,env(safe-area-inset-top)) 0 6px}
   h1{font-size:26px; font-weight:800; letter-spacing:-.02em; margin:8px 0 2px; display:flex; align-items:center; gap:10px}
+  .logo{width:34px; height:34px; border-radius:9px; flex:0 0 auto}
   .sub{color:var(--muted); font-size:14px; margin:0 0 14px}
 
   /* tabs */
@@ -86,7 +88,7 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>🥗 Meal Swaps</h1>
+    <h1><img class="logo" src="icon.png" alt="">Meal Swaps</h1>
     <p class="sub">Macro-matched alternatives for each meal, by training day.</p>
   </header>
 </div>
