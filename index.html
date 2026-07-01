@@ -51,6 +51,16 @@
   .stat.cal b{color:var(--cal)} .stat.pro b{color:var(--pro)}
   .stat.fat b{color:var(--fat)} .stat.carb b{color:var(--carb)}
 
+  /* carb swap overview */
+  .carbcard{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:16px; margin:-6px 0 18px}
+  .carbcard h2{font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
+    margin:0 0 10px; font-weight:700}
+  .carb-row{display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+    padding:7px 0; border-bottom:1px solid var(--line); font-size:13px}
+  .carb-row:last-child{border-bottom:none}
+  .carb-meal{font-weight:700; flex:0 0 auto}
+  .carb-vals{color:var(--muted); text-align:right; font-variant-numeric:tabular-nums}
+
   /* meal card */
   .meal{background:var(--card); border:1px solid var(--line); border-radius:18px; margin-bottom:12px; overflow:hidden}
   .meal-head{display:flex; align-items:flex-start; gap:13px; padding:15px 16px; cursor:default}
@@ -97,6 +107,10 @@
   <div class="targets">
     <h2 id="targets-title">Day Targets</h2>
     <div class="stats" id="stats"></div>
+  </div>
+  <div class="carbcard" id="carbcard">
+    <h2>Carb Swap Amounts</h2>
+    <div id="carbs"></div>
   </div>
   <div id="meals"></div>
   <footer id="foot"></footer>
@@ -216,13 +230,13 @@ const M = {
   b490:{type:"breakfast", title:"Breakfast", items:"75g oats + 10g flaxseed + 30g whey + 150ml almond milk + 60g blueberries", cal:490,p:35,f:13,c:51},
   intra:{type:"intra",    title:"Intra-Workout",  items:"Fruit pouch / SiS gel (during session)", cal:65,p:0,f:0,c:15, alts:ALT.intra},
 
-  L1:{type:"lunch", title:"Lunch", items:"130g meat (raw) + 125g rice (cooked) + 2 cups salad + 30g feta", cal:450,p:40,f:13,c:40, alts:ALT.L1},
-  L2:{type:"lunch", title:"Lunch", items:"120g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:435,p:36,f:10,c:48, alts:ALT.L2},
-  L3:{type:"lunch", title:"Lunch", items:"100g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:412,p:31,f:9,c:48, alts:ALT.L3},
+  L1:{type:"lunch", title:"Lunch", items:"130g meat (raw) + 125g rice (cooked) + 2 cups salad + 30g feta", cal:450,p:40,f:13,c:40, alts:ALT.L1, carbs:{rice:125,pasta:115,kumara:200,potato:250}},
+  L2:{type:"lunch", title:"Lunch", items:"120g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:435,p:36,f:10,c:48, alts:ALT.L2, carbs:{rice:150,pasta:145,kumara:230,potato:280}},
+  L3:{type:"lunch", title:"Lunch", items:"100g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:412,p:31,f:9,c:48, alts:ALT.L3, carbs:{rice:150,pasta:140,kumara:230,potato:270}},
 
-  D1:{type:"dinner", title:"Dinner", items:"130g meat (raw) + 250g kumara (cooked) + 2 cups salad + 30g feta", cal:430,p:38,f:10,c:41, alts:ALT.D1},
-  D2:{type:"dinner", title:"Dinner", items:"100g meat (raw) + 200g pasta (cooked) + 200g canned tomatoes + 2 cups salad + 30g feta", cal:533,p:40,f:11,c:61, alts:ALT.D2},
-  D3:{type:"dinner", title:"Dinner", items:"120g meat (raw) + 150g pasta (cooked) + 2 cups salad + 15g feta", cal:400,p:38,f:7,c:40, alts:ALT.D3},
+  D1:{type:"dinner", title:"Dinner", items:"130g meat (raw) + 250g kumara (cooked) + 2 cups salad + 30g feta", cal:430,p:38,f:10,c:41, alts:ALT.D1, carbs:{rice:130,kumara:250,potato:250}},
+  D2:{type:"dinner", title:"Dinner", items:"100g meat (raw) + 200g pasta (cooked) + 200g canned tomatoes + 2 cups salad + 30g feta", cal:533,p:40,f:11,c:61, alts:ALT.D2, carbs:{rice:200,pasta:200,potato:320}},
+  D3:{type:"dinner", title:"Dinner", items:"120g meat (raw) + 150g pasta (cooked) + 2 cups salad + 15g feta", cal:400,p:38,f:7,c:40, alts:ALT.D3, carbs:{rice:150,pasta:150,kumara:215}},
 
   Sa_m:{type:"snack", title:"Morning Snack",   items:"2 rice cakes + 30g PB + 5g jam + 1 apple",  cal:300,p:8,f:16,c:29, alts:ALT.Sa},
   Sb_a:{type:"snack", title:"Afternoon Snack", items:"2 rice cakes + 30g PB + 5g jam + 1 banana", cal:340,p:8,f:16,c:40, alts:ALT.Sb},
@@ -258,9 +272,23 @@ const STYLE = {
 
 const tabsEl=document.getElementById('tabs');
 const statsEl=document.getElementById('stats');
+const carbcardEl=document.getElementById('carbcard');
+const carbsEl=document.getElementById('carbs');
 const mealsEl=document.getElementById('meals');
 const titleEl=document.getElementById('targets-title');
 const footEl=document.getElementById('foot');
+
+const CARB_KEYS=[['rice','🍚','rice'],['pasta','🍝','pasta'],['kumara','🍠','kumara'],['potato','🥔','potato']];
+
+function renderCarbs(day){
+  const rows=day.meals.filter(m=>m.carbs);
+  if(!rows.length){ carbcardEl.style.display='none'; carbsEl.innerHTML=''; return; }
+  carbcardEl.style.display='block';
+  carbsEl.innerHTML=rows.map(m=>{
+    const vals=CARB_KEYS.filter(([k])=>m.carbs[k]!=null).map(([k,e,label])=>`${e} ${m.carbs[k]}g ${label}`);
+    return `<div class="carb-row"><span class="carb-meal">${m.title}</span><span class="carb-vals">${vals.join(' = ')}</span></div>`;
+  }).join('');
+}
 
 function macroLine(m){
   return `<span class="m-cal">${m.cal} cal</span> · <span class="m-pro">${m.p}g P</span> · <span class="m-fat">${m.f}g F</span> · <span class="m-carb">${m.c}g C</span>`;
@@ -275,6 +303,8 @@ function render(day){
     <div class="stat pro"><b>${t.p}g</b><span>protein</span></div>
     <div class="stat fat"><b>${t.f}g</b><span>fat</span></div>
     <div class="stat carb"><b>${t.c}g</b><span>carbs</span></div>`;
+
+  renderCarbs(day);
 
   mealsEl.innerHTML=day.meals.map((m,i)=>{
     const s=STYLE[m.type];
