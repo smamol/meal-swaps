@@ -118,7 +118,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-07-02.1';
+const APP_VERSION = '2026-07-12.1';
 
 /* ---------- shared alternative sets ---------- */
 const ALT = {
@@ -233,13 +233,13 @@ const M = {
   b490:{type:"breakfast", title:"Breakfast", items:"75g oats + 10g flaxseed + 30g whey + 150ml almond milk + 60g blueberries", cal:490,p:35,f:13,c:51},
   intra:{type:"intra",    title:"Intra-Workout",  items:"Fruit pouch / SiS gel (during session)", cal:65,p:0,f:0,c:15, alts:ALT.intra},
 
-  L1:{type:"lunch", title:"Lunch", items:"130g meat (raw) + 125g rice (cooked) + 2 cups salad + 30g feta", cal:450,p:40,f:13,c:40, alts:ALT.L1, carbs:{rice:125,pasta:115,kumara:200,potato:250}},
-  L2:{type:"lunch", title:"Lunch", items:"120g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:435,p:36,f:10,c:48, alts:ALT.L2, carbs:{rice:150,pasta:145,kumara:230,potato:280}},
-  L3:{type:"lunch", title:"Lunch", items:"100g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:412,p:31,f:9,c:48, alts:ALT.L3, carbs:{rice:150,pasta:140,kumara:230,potato:270}},
+  L1:{type:"lunch", title:"Lunch", items:"130g meat (raw) + 125g rice (cooked) + 2 cups salad + 30g feta", cal:450,p:40,f:13,c:40, alts:ALT.L1, carbs:{rice:125,pasta:115,couscous:150,kumara:200,potato:250}},
+  L2:{type:"lunch", title:"Lunch", items:"120g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:435,p:36,f:10,c:48, alts:ALT.L2, carbs:{rice:150,pasta:145,couscous:185,kumara:230,potato:280}},
+  L3:{type:"lunch", title:"Lunch", items:"100g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:412,p:31,f:9,c:48, alts:ALT.L3, carbs:{rice:150,pasta:140,couscous:185,kumara:230,potato:270}},
 
-  D1:{type:"dinner", title:"Dinner", items:"130g meat (raw) + 250g kumara (cooked) + 2 cups salad + 30g feta", cal:430,p:38,f:10,c:41, alts:ALT.D1, carbs:{rice:130,kumara:250,potato:250}},
-  D2:{type:"dinner", title:"Dinner", items:"100g meat (raw) + 200g pasta (cooked) + 200g canned tomatoes + 2 cups salad + 30g feta", cal:533,p:40,f:11,c:61, alts:ALT.D2, carbs:{rice:200,pasta:200,potato:320}},
-  D3:{type:"dinner", title:"Dinner", items:"120g meat (raw) + 150g pasta (cooked) + 2 cups salad + 15g feta", cal:400,p:38,f:7,c:40, alts:ALT.D3, carbs:{rice:150,pasta:150,kumara:215}},
+  D1:{type:"dinner", title:"Dinner", items:"130g meat (raw) + 250g kumara (cooked) + 2 cups salad + 30g feta", cal:430,p:38,f:10,c:41, alts:ALT.D1, carbs:{rice:130,couscous:160,kumara:250,potato:250}},
+  D2:{type:"dinner", title:"Dinner", items:"100g meat (raw) + 200g pasta (cooked) + 200g canned tomatoes + 2 cups salad + 30g feta", cal:533,p:40,f:11,c:61, alts:ALT.D2, carbs:{rice:200,pasta:200,couscous:245,potato:320}},
+  D3:{type:"dinner", title:"Dinner", items:"120g meat (raw) + 150g pasta (cooked) + 2 cups salad + 15g feta", cal:400,p:38,f:7,c:40, alts:ALT.D3, carbs:{rice:150,pasta:150,couscous:185,kumara:215}},
 
   Sa_m:{type:"snack", title:"Morning Snack",   items:"2 rice cakes + 30g PB + 5g jam + 1 apple",  cal:300,p:8,f:16,c:29, alts:ALT.Sa},
   Sb_a:{type:"snack", title:"Afternoon Snack", items:"2 rice cakes + 30g PB + 5g jam + 1 banana", cal:340,p:8,f:16,c:40, alts:ALT.Sb},
@@ -281,7 +281,7 @@ const mealsEl=document.getElementById('meals');
 const titleEl=document.getElementById('targets-title');
 const footEl=document.getElementById('foot');
 
-const CARB_KEYS=[['rice','🍚','rice'],['pasta','🍝','pasta'],['kumara','🍠','kumara'],['potato','🥔','potato']];
+const CARB_KEYS=[['rice','🍚','rice'],['pasta','🍝','pasta'],['couscous','🌾','couscous'],['kumara','🍠','kumara'],['potato','🥔','potato']];
 
 function renderCarbs(day){
   const rows=day.meals.filter(m=>m.carbs);
