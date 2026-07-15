@@ -118,7 +118,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-07-12.1';
+const APP_VERSION = '2026-07-16.1';
 
 /* ---------- shared alternative sets ---------- */
 const ALT = {
@@ -176,15 +176,15 @@ const ALT = {
   ],
   /* Snack 300 / 8P / 16F / 29C */
   Sa:[
-    {e:"🥥",n:"30g almond butter + 1 apple + 1 corn thin",cal:290,p:8,f:16,c:31},
-    {e:"🍞",n:"1 slice toast + 30g peanut butter + ½ apple",cal:295,p:8,f:16,c:31},
-    {e:"🌰",n:"30g almonds + 1 apple + 1 corn thin",cal:290,p:8,f:16,c:29},
+    {e:"🥥",n:"30g almond butter + 1 apple + 1 corn thin",cal:300,p:8,f:16,c:31},
+    {e:"🍞",n:"1 slice toast + 30g peanut butter + ½ apple",cal:300,p:8,f:16,c:31},
+    {e:"🌰",n:"30g almonds + 1 apple + 1 corn thin",cal:295,p:8,f:16,c:29},
   ],
   /* Snack 340 / 8P / 16F / 40C */
   Sb:[
-    {e:"🥥",n:"30g almond butter + 1 rice cake + 1 banana",cal:325,p:9,f:17,c:40},
-    {e:"🍞",n:"1 slice toast + 30g peanut butter + 5g honey + ½ banana",cal:325,p:9,f:16,c:40},
-    {e:"🌰",n:"30g almonds + 1 banana + 1 rice cake",cal:324,p:9,f:16,c:41},
+    {e:"🥥",n:"30g almond butter + 1 rice cake + 1 banana",cal:340,p:9,f:17,c:40},
+    {e:"🍞",n:"1 slice toast + 30g peanut butter + 5g honey + ½ banana",cal:335,p:9,f:16,c:40},
+    {e:"🌰",n:"30g almonds + 1 banana + 1 rice cake",cal:335,p:9,f:16,c:41},
   ],
   /* Snack 332 / 8P / 16F / 37C */
   Sc:[
@@ -196,25 +196,25 @@ const ALT = {
   Sd:[
     {e:"🍌",n:"1 banana + 12g peanut butter + 1 rice cake",cal:215,p:5,f:7,c:35},
     {e:"🍞",n:"1 slice toast + 10g peanut butter + 10g honey + ½ banana",cal:218,p:5,f:6,c:37},
-    {e:"🥥",n:"2 rice cakes + 10g almond butter + 1 apple",cal:210,p:5,f:6,c:36},
+    {e:"🍇",n:"1 slice fruit toast + 10g almond butter + 1 small apple",cal:210,p:4,f:7,c:33},
   ],
   /* Snack 430 / 14P / 9F / 74C (bagel) */
   Se:[
     {e:"🥞",n:"3 crumpets + 10g peanut butter + 10g honey + ½ banana",cal:427,p:13,f:8,c:77},
     {e:"🍞",n:"3 slices Vogel's + 10g peanut butter + 20g jam + ½ banana",cal:445,p:15,f:10,c:74},
-    {e:"🥯",n:"1 bagel + 15g peanut butter + 10g jam + 1 banana",cal:420,p:13,f:9,c:75},
+    {e:"🫓",n:"2 English muffins + 15g peanut butter + 10g honey + ½ banana",cal:430,p:14,f:9,c:74},
   ],
   /* Evening 315 / 12P / 16F / 26C */
   des1:[
-    {e:"🍫",n:"160g yoghurt + 15g dark chocolate + 8g almonds + 60g blueberries",cal:285,p:12,f:16,c:27},
-    {e:"🥄",n:"170g yoghurt + 25g dark chocolate + 40g raspberries",cal:290,p:12,f:16,c:26},
-    {e:"🥝",n:"150g yoghurt + 15g dark chocolate + 8g almonds + 1 kiwifruit",cal:285,p:12,f:16,c:27},
+    {e:"🍫",n:"160g yoghurt + 15g dark chocolate + 8g almonds + 60g blueberries",cal:310,p:12,f:16,c:27},
+    {e:"🥄",n:"170g yoghurt + 25g dark chocolate + 40g raspberries",cal:310,p:12,f:16,c:26},
+    {e:"🥝",n:"150g yoghurt + 15g dark chocolate + 8g almonds + 1 kiwifruit",cal:305,p:12,f:16,c:27},
   ],
   /* Evening 310 / 12P / 10F / 38C */
   des2:[
-    {e:"🍓",n:"160g yoghurt + 35g granola + 60g blueberries",cal:302,p:12,f:11,c:39},
-    {e:"🥄",n:"160g yoghurt + 25g muesli + 50g blueberries + 8g dark chocolate",cal:285,p:12,f:11,c:38},
-    {e:"🍌",n:"170g yoghurt + 25g granola + ½ banana",cal:285,p:12,f:10,c:39},
+    {e:"🍓",n:"160g yoghurt + 35g granola + 60g blueberries",cal:305,p:12,f:11,c:39},
+    {e:"🥄",n:"160g yoghurt + 25g muesli + 50g blueberries + 8g dark chocolate",cal:300,p:12,f:11,c:38},
+    {e:"🍌",n:"170g yoghurt + 25g granola + ½ banana",cal:300,p:12,f:10,c:39},
   ],
   /* Intra-workout 65–87 / carb only */
   intra:[
