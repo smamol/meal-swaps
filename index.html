@@ -118,109 +118,109 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-07-17.1';
+const APP_VERSION = '2026-08-14.1';
 
 /* ---------- shared alternative sets ---------- */
 const ALT = {
   /* Lunch 450 / 40P (feta-free swaps) */
   L1:[
-    {e:"🍗",n:"160g chicken breast + 240g potato (cooked) + 2 cups salad + ¼ avocado",cal:450,p:41,f:13,c:40},
-    {e:"🐟",n:"160g white fish (snapper) + 125g rice + 2 cups veg + 15g pumpkin seeds",cal:445,p:39,f:13,c:41},
-    {e:"🥩",n:"120g lean beef + 240g kumara (cooked) + 2 cups salad + 1 boiled egg",cal:450,p:40,f:14,c:38},
-    {e:"🍤",n:"180g prawns + 125g rice (cooked) + 2 cups salad + 15g pumpkin seeds",cal:450,p:39,f:12,c:41},
-    {e:"🍝",n:"130g chicken + 150g pasta (cooked) + 2 cups salad + 10g pumpkin seeds",cal:440,p:40,f:11,c:41},
-    {e:"🫘",n:"110g chicken + 150g lentils (cooked) + 2 cups salad + ¼ avocado",cal:445,p:39,f:14,c:40},
+    {e:"🍗",n:"120g chicken breast + 305g potato (cooked) + 2 cups salad + ¼ avocado",cal:457,p:41,f:15,c:35},
+    {e:"🐟",n:"105g white fish (snapper) + 90g rice + 2 cups veg + 15g pumpkin seeds",cal:394,p:36,f:10,c:35},
+    {e:"🥩",n:"90g lean beef + 250g kumara (cooked) + 2 cups salad + 1 boiled egg",cal:467,p:39,f:11,c:49},
+    {e:"🍤",n:"110g prawns + 110g rice (cooked) + 2 cups salad + 15g pumpkin seeds",cal:361,p:35,f:9,c:34},
+    {e:"🍝",n:"95g chicken + 145g pasta (cooked) + 2 cups salad + 10g pumpkin seeds",cal:400,p:38,f:9,c:39},
+    {e:"🫘",n:"50g chicken + 310g lentils (cooked) + 2 cups salad + ¼ avocado",cal:520,p:40,f:14,c:50},
   ],
   /* Lunch 435 / 36P (feta-free swaps) */
   L2:[
-    {e:"🍗",n:"140g chicken + 290g potato (cooked) + 2 cups salad + 8g pumpkin seeds",cal:440,p:38,f:11,c:47},
-    {e:"🐟",n:"150g white fish + 150g rice (cooked) + 2 cups veg + 8g sunflower seeds",cal:435,p:35,f:10,c:49},
-    {e:"🥩",n:"100g lean beef + 290g kumara (cooked) + 2 cups salad + 1 boiled egg",cal:435,p:34,f:12,c:47},
-    {e:"🍝",n:"120g chicken + 180g pasta (cooked) + 2 cups salad + 8g pumpkin seeds",cal:430,p:35,f:10,c:48},
-    {e:"🌯",n:"120g chicken + 1 large wrap + 2 cups salad + 25g hummus",cal:440,p:37,f:10,c:49},
-    {e:"🍤",n:"180g prawns + 150g rice (cooked) + 2 cups salad + 8g pumpkin seeds",cal:440,p:36,f:9,c:49},
+    {e:"🍗",n:"100g chicken + 370g potato (cooked) + 2 cups salad + 8g pumpkin seeds",cal:401,p:38,f:7,c:42},
+    {e:"🐟",n:"95g white fish + 115g rice (cooked) + 2 cups veg + 8g sunflower seeds",cal:378,p:31,f:7,c:42},
+    {e:"🥩",n:"70g lean beef + 315g kumara (cooked) + 2 cups salad + 1 boiled egg",cal:486,p:33,f:10,c:61},
+    {e:"🍝",n:"75g chicken + 175g pasta (cooked) + 2 cups salad + 8g pumpkin seeds",cal:401,p:33,f:7,c:47},
+    {e:"🌯",n:"100g chicken + 1 large wrap + 50g rice (cooked) + 2 cups salad + 25g hummus",cal:423,p:38,f:9,c:44},
+    {e:"🍤",n:"105g prawns + 135g rice (cooked) + 2 cups salad + 8g pumpkin seeds",cal:349,p:32,f:5,c:41},
   ],
   /* Lunch 412 / 31P (feta-free swaps) */
   L3:[
-    {e:"🍗",n:"120g chicken + 290g potato (cooked) + 2 cups salad + 8g pumpkin seeds",cal:415,p:31,f:10,c:47},
-    {e:"🐟",n:"140g white fish + 150g rice (cooked) + 2 cups veg + 8g sunflower seeds",cal:420,p:31,f:9,c:48},
-    {e:"🥩",n:"100g lean beef + 290g kumara (cooked) + 2 cups salad + 8g pumpkin seeds",cal:420,p:30,f:10,c:47},
-    {e:"🍝",n:"100g chicken + 180g pasta (cooked) + 2 cups salad + 1 tbsp mixed seeds",cal:405,p:30,f:9,c:47},
-    {e:"🥚",n:"90g chicken + 2 eggs + 150g rice (cooked) + 2 cups salad",cal:415,p:31,f:12,c:46},
+    {e:"🍗",n:"75g chicken + 370g potato (cooked) + 2 cups salad + 8g pumpkin seeds",cal:366,p:31,f:6,c:42},
+    {e:"🐟",n:"80g white fish + 110g rice (cooked) + 2 cups veg + 8g sunflower seeds",cal:354,p:28,f:7,c:41},
+    {e:"🥩",n:"65g lean beef + 315g kumara (cooked) + 2 cups salad + 8g pumpkin seeds",cal:457,p:27,f:10,c:61},
+    {e:"🍝",n:"70g chicken + 170g pasta (cooked) + 2 cups salad + 1 tbsp mixed seeds",cal:395,p:31,f:8,c:45},
+    {e:"🥚",n:"45g chicken + 2 eggs + 125g rice (cooked) + 2 cups salad",cal:374,p:32,f:10,c:38},
   ],
   /* Dinner 430 / 38P (kumara, feta-free swaps) */
   D1:[
-    {e:"🍗",n:"155g chicken + 250g potato (cooked) + 2 cups salad + ¼ avocado",cal:425,p:38,f:11,c:40},
-    {e:"🐟",n:"150g white fish + 250g kumara (cooked) + 2 cups salad + 15g pumpkin seeds",cal:430,p:37,f:11,c:42},
-    {e:"🥩",n:"112g lean beef mince + 250g kumara (cooked) + 2 cups salad + 1 boiled egg",cal:420,p:36,f:12,c:39},
-    {e:"🦃",n:"140g turkey mince + 130g rice (cooked) + 2 cups veg + 15g pumpkin seeds",cal:435,p:39,f:12,c:39},
-    {e:"🌮",n:"130g chicken + 2 corn tortillas + 30g black beans + 2 cups salad + ¼ avocado",cal:435,p:37,f:12,c:41},
-    {e:"🍤",n:"190g prawns + 250g kumara (cooked) + 2 cups salad + 15g pumpkin seeds",cal:435,p:38,f:10,c:42},
+    {e:"🍗",n:"110g chicken + 305g potato (cooked) + 2 cups salad + ¼ avocado",cal:443,p:38,f:15,c:35},
+    {e:"🐟",n:"95g white fish + 275g kumara (cooked) + 2 cups salad + 15g pumpkin seeds",cal:449,p:33,f:9,c:54},
+    {e:"🥩",n:"75g lean beef mince + 260g kumara (cooked) + 2 cups salad + 1 boiled egg",cal:401,p:30,f:7,c:51},
+    {e:"🐖",n:"100g pork loin + 85g rice (cooked) + 2 cups veg + 15g pumpkin seeds",cal:443,p:39,f:14,c:34},
+    {e:"🌮",n:"100g chicken + 2 corn tortillas + 30g black beans + 20g rice (cooked) + 2 cups salad + ¼ avocado",cal:468,p:36,f:16,c:39},
+    {e:"🍤",n:"105g prawns + 275g kumara (cooked) + 2 cups salad + 15g pumpkin seeds",cal:448,p:34,f:9,c:54},
   ],
   /* Dinner 533 / 40P (pasta+tomato, feta-free swaps) */
   D2:[
-    {e:"🍗",n:"110g chicken + 200g pasta (cooked) + tomato sauce + 2 cups salad + 15g pumpkin seeds",cal:530,p:40,f:11,c:61},
-    {e:"🥩",n:"110g lean beef mince + 200g pasta (cooked) + canned tomatoes + salad + ¼ avocado",cal:535,p:40,f:13,c:61},
-    {e:"🍚",n:"110g chicken + 200g rice (cooked) + 2 cups stir-fry veg + 1 boiled egg",cal:520,p:41,f:10,c:62},
-    {e:"🥔",n:"125g chicken + 325g potato (cooked) + 2 cups salad + 15g pumpkin seeds",cal:530,p:40,f:11,c:59},
-    {e:"🌯",n:"110g chicken + 2 large wraps + 2 cups salad + 1 boiled egg",cal:525,p:41,f:13,c:58},
-    {e:"🍤",n:"180g prawns + 200g pasta (cooked) + canned tomatoes + salad + 15g pumpkin seeds",cal:530,p:40,f:11,c:62},
+    {e:"🍗",n:"80g chicken + 220g pasta (cooked) + tomato sauce + 2 cups salad + 15g pumpkin seeds",cal:509,p:39,f:11,c:58},
+    {e:"🥩",n:"80g lean beef mince + 220g pasta (cooked) + canned tomatoes + salad + ¼ avocado",cal:523,p:32,f:16,c:58},
+    {e:"🍚",n:"95g chicken + 150g rice (cooked) + 2 cups stir-fry veg + 1 boiled egg",cal:464,p:41,f:8,c:52},
+    {e:"🥔",n:"95g chicken + 465g potato (cooked) + 2 cups salad + 15g pumpkin seeds",cal:486,p:40,f:10,c:52},
+    {e:"🌯",n:"85g chicken + 2 large wraps + 0g rice (cooked) + 2 cups salad + 1 boiled egg",cal:534,p:43,f:15,c:53},
+    {e:"🍤",n:"85g prawns + 225g pasta (cooked) + canned tomatoes + salad + 15g pumpkin seeds",cal:493,p:37,f:10,c:59},
   ],
   /* Dinner 400 / 38P (pasta, leaner, feta-free swaps) */
   D3:[
-    {e:"🍗",n:"130g chicken + 150g pasta (cooked) + 2 cups salad + 8g pumpkin seeds",cal:400,p:37,f:7,c:40},
-    {e:"🐟",n:"160g white fish + 150g pasta (cooked) + 2 cups veg + 8g sunflower seeds",cal:400,p:37,f:8,c:40},
-    {e:"🥩",n:"120g lean beef + 240g kumara (cooked) + 2 cups salad + 8g pumpkin seeds",cal:395,p:36,f:9,c:40},
-    {e:"🍚",n:"120g chicken + 125g rice (cooked) + 2 cups stir-fry veg + 1 tbsp mixed seeds",cal:400,p:37,f:8,c:41},
-    {e:"🍤",n:"200g prawns + 150g pasta (cooked) + 2 cups salad + 8g pumpkin seeds",cal:400,p:37,f:7,c:42},
+    {e:"🍗",n:"90g chicken + 145g pasta (cooked) + 2 cups salad + 8g pumpkin seeds",cal:382,p:36,f:8,c:39},
+    {e:"🐟",n:"95g white fish + 115g pasta (cooked) + 2 cups veg + 8g sunflower seeds",cal:382,p:34,f:7,c:38},
+    {e:"🥩",n:"90g lean beef + 265g kumara (cooked) + 2 cups salad + 8g pumpkin seeds",cal:460,p:34,f:11,c:52},
+    {e:"🍚",n:"110g chicken + 90g rice (cooked) + 2 cups stir-fry veg + 1 tbsp mixed seeds",cal:393,p:38,f:8,c:35},
+    {e:"🍤",n:"95g prawns + 150g pasta (cooked) + 2 cups salad + 8g pumpkin seeds",cal:362,p:34,f:6,c:40},
   ],
   /* Snack 300 / 8P / 16F / 29C */
   Sa:[
-    {e:"🥥",n:"30g almond butter + 1 apple + 1 corn thin",cal:300,p:8,f:16,c:31},
-    {e:"🍞",n:"1 slice toast + 30g peanut butter + ½ apple",cal:300,p:8,f:16,c:31},
-    {e:"🌰",n:"30g almonds + 1 apple + 1 corn thin",cal:295,p:8,f:16,c:29},
+    {e:"🥥",n:"30g almond butter + 1 apple + 1 corn thin",cal:276,p:7,f:16,c:22},
+    {e:"🍞",n:"1 slice toast + 30g peanut butter + ½ apple",cal:330,p:10,f:19,c:26},
+    {e:"🌰",n:"30g almonds + 1 apple + 1 corn thin",cal:276,p:7,f:16,c:22},
   ],
   /* Snack 340 / 8P / 16F / 40C */
   Sb:[
-    {e:"🥥",n:"30g almond butter + 1 rice cake + 1 banana",cal:340,p:9,f:17,c:40},
-    {e:"🍞",n:"1 slice toast + 30g peanut butter + 5g honey + ½ banana",cal:335,p:9,f:16,c:40},
-    {e:"🌰",n:"30g almonds + 1 banana + 1 rice cake",cal:335,p:9,f:16,c:41},
+    {e:"🥥",n:"30g almond butter + 1 rice cake + 1 banana",cal:326,p:8,f:17,c:33},
+    {e:"🍞",n:"1 slice toast + 30g peanut butter + 5g honey + ½ banana",cal:364,p:11,f:19,c:34},
+    {e:"🌰",n:"30g almonds + 1 banana + 1 rice cake",cal:326,p:8,f:17,c:33},
   ],
   /* Snack 332 / 8P / 16F / 37C */
   Sc:[
-    {e:"🥥",n:"30g almond butter + 2 rice cakes + 1 apple",cal:330,p:9,f:17,c:35},
-    {e:"🍞",n:"1 slice toast + 32g peanut butter + ½ banana",cal:322,p:9,f:16,c:35},
-    {e:"🌰",n:"30g almonds + 1 apple + 2 rice cakes",cal:332,p:9,f:17,c:37},
+    {e:"🥥",n:"30g almond butter + 2 rice cakes + 1 apple",cal:321,p:8,f:17,c:31},
+    {e:"🍞",n:"1 slice toast + 32g peanut butter + ½ banana",cal:361,p:11,f:20,c:31},
+    {e:"🌰",n:"30g almonds + 1 apple + 2 rice cakes",cal:321,p:8,f:17,c:31},
   ],
   /* Snack 215 / 4P / 6F / 34C (light) */
   Sd:[
-    {e:"🍌",n:"1 banana + 12g peanut butter + 1 rice cake",cal:215,p:5,f:7,c:35},
-    {e:"🍞",n:"1 slice toast + 10g peanut butter + 10g honey + ½ banana",cal:218,p:5,f:6,c:37},
-    {e:"🍇",n:"1 slice fruit toast + 10g almond butter + 1 small apple",cal:210,p:4,f:7,c:33},
+    {e:"🍌",n:"1 banana + 12g peanut butter + 1 rice cake",cal:221,p:4,f:7,c:34},
+    {e:"🍞",n:"1 slice toast + 10g peanut butter + 10g honey + ½ banana",cal:255,p:7,f:9,c:35},
+    {e:"🍇",n:"1 slice fruit toast + 10g almond butter + 1 small apple",cal:232,p:6,f:7,c:33},
   ],
   /* Snack 430 / 14P / 9F / 74C (bagel) */
   Se:[
-    {e:"🥞",n:"3 crumpets + 10g peanut butter + 10g honey + ½ banana",cal:427,p:13,f:8,c:77},
-    {e:"🍞",n:"3 slices Vogel's + 10g peanut butter + 20g jam + ½ banana",cal:445,p:15,f:10,c:74},
-    {e:"🫓",n:"2 English muffins + 15g peanut butter + 10g honey + ½ banana",cal:430,p:14,f:9,c:74},
+    {e:"🥞",n:"3 crumpets + 10g peanut butter + 10g honey + ½ banana",cal:415,p:12,f:7,c:72},
+    {e:"🍞",n:"3 slices Vogel's + 10g peanut butter + 20g jam + ½ banana",cal:496,p:16,f:16,c:68},
+    {e:"🫓",n:"2 English muffins + 15g peanut butter + 10g honey + ½ banana",cal:461,p:15,f:11,c:72},
   ],
   /* Evening 315 / 12P / 16F / 26C */
   des1:[
-    {e:"🍫",n:"160g yoghurt + 15g dark chocolate + 8g almonds + 60g blueberries",cal:310,p:12,f:16,c:27},
-    {e:"🥄",n:"170g yoghurt + 25g dark chocolate + 40g raspberries",cal:310,p:12,f:16,c:26},
-    {e:"🥝",n:"150g yoghurt + 15g dark chocolate + 8g almonds + 1 kiwifruit",cal:305,p:12,f:16,c:27},
+    {e:"🍫",n:"160g yoghurt + 15g dark chocolate + 8g almonds + 60g blueberries",cal:275,p:18,f:13,c:20},
+    {e:"🥄",n:"170g yoghurt + 25g dark chocolate + 40g raspberries",cal:276,p:18,f:13,c:23},
+    {e:"🥝",n:"150g yoghurt + 15g dark chocolate + 8g almonds + 1 kiwifruit",cal:280,p:17,f:13,c:22},
   ],
   /* Evening 310 / 12P / 10F / 38C */
   des2:[
-    {e:"🍓",n:"160g yoghurt + 35g granola + 60g blueberries",cal:305,p:12,f:11,c:39},
-    {e:"🥄",n:"160g yoghurt + 25g muesli + 50g blueberries + 8g dark chocolate",cal:300,p:12,f:11,c:38},
-    {e:"🍌",n:"170g yoghurt + 25g granola + ½ banana",cal:300,p:12,f:10,c:39},
+    {e:"🍓",n:"160g yoghurt + 35g granola + 60g blueberries",cal:298,p:19,f:10,c:31},
+    {e:"🥄",n:"160g yoghurt + 25g muesli + 50g blueberries + 8g dark chocolate",cal:284,p:19,f:10,c:29},
+    {e:"🍌",n:"170g yoghurt + 25g granola + ½ banana",cal:289,p:19,f:9,c:32},
   ],
   /* Intra-workout 65–87 / carb only */
   intra:[
-    {e:"🧃",n:"1 fruit pouch (Fruit / Only Organic)",cal:65,p:0,f:0,c:15},
-    {e:"💧",n:"1 SiS isotonic gel",cal:87,p:0,f:0,c:22},
-    {e:"🥤",n:"250ml sports drink (Mizone / Powerade)",cal:65,p:0,f:0,c:16},
+    {e:"🧃",n:"1 fruit pouch (Fruit / Only Organic)",cal:45,p:0,f:0,c:11},
+    {e:"💧",n:"1 SiS isotonic gel",cal:0,p:0,f:0,c:0},
+    {e:"🥤",n:"250ml sports drink (Mizone / Powerade)",cal:78,p:0,f:0,c:19},
   ],
 };
 
@@ -229,7 +229,7 @@ const ALT = {
    150g rice = ~45g C, 150g pasta = ~37g C, 250g kumara = ~38g C).
    Every carb-swap row is computed from the meal's planned carb source, so the
    conversion ratios are identical on every row. */
-const CARB_DENSITY = {rice:30, pasta:25, couscous:23, kumara:15.5, potato:15.5};
+const CARB_DENSITY = {rice:28.7, pasta:25.4, couscous:32.7, kumara:18.8, potato:10.8};
 function carbRow(source, grams){
   const target = grams * CARB_DENSITY[source];
   const row = {};
@@ -239,29 +239,29 @@ function carbRow(source, grams){
 
 /* ---------- meal builders ---------- */
 const M = {
-  preBanana:{type:"pre",  title:"Pre-Training",   items:"1× banana (120g)",                    cal:107,p:1,f:0,c:27},
-  preCrumpet:{type:"pre", title:"Pre-Training",   items:"1× crumpet + 10g honey",               cal:135,p:3,f:1,c:30},
-  prePlus:{type:"pre",    title:"Pre-Training +", items:"1 bagel or 2 crumpets + 20g jam/honey + 1 banana", cal:397,p:11,f:4,c:80},
-  b436:{type:"breakfast", title:"Breakfast", items:"60g oats + 10g flaxseed + 30g whey + 150ml almond milk + 60g blueberries", cal:436,p:33,f:12,c:43},
-  b490:{type:"breakfast", title:"Breakfast", items:"75g oats + 10g flaxseed + 30g whey + 150ml almond milk + 60g blueberries", cal:490,p:35,f:13,c:51},
-  intra:{type:"intra",    title:"Intra-Workout",  items:"Fruit pouch / SiS gel (during session)", cal:65,p:0,f:0,c:15, alts:ALT.intra},
+  preBanana:{type:"pre",  title:"Pre-Training",   items:"1× banana (120g)", cal:114,p:1,f:0,c:25},
+  preCrumpet:{type:"pre", title:"Pre-Training",   items:"1× crumpet + 10g honey", cal:118,p:3,f:1,c:24},
+  prePlus:{type:"pre",    title:"Pre-Training +", items:"1 bagel or 2 crumpets + 20g jam/honey + 1 banana", cal:302,p:6,f:1,c:64},
+  b436:{type:"breakfast", title:"Breakfast", items:"60g oats + 10g flaxseed + 30g whey + 150ml almond milk + 60g blueberries", cal:429,p:34,f:12,c:41},
+  b490:{type:"breakfast", title:"Breakfast", items:"75g oats + 10g flaxseed + 30g whey + 150ml almond milk + 60g blueberries", cal:483,p:36,f:13,c:50},
+  intra:{type:"intra",    title:"Intra-Workout",  items:"Fruit pouch / SiS gel (during session)", cal:87,p:0,f:0,c:22, alts:ALT.intra},
 
-  L1:{type:"lunch", title:"Lunch", items:"130g meat (raw) + 125g rice (cooked) + 2 cups salad + 30g feta", cal:450,p:40,f:13,c:40, alts:ALT.L1, carbs:carbRow('rice',125)},
-  L2:{type:"lunch", title:"Lunch", items:"120g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:435,p:36,f:10,c:48, alts:ALT.L2, carbs:carbRow('rice',150)},
-  L3:{type:"lunch", title:"Lunch", items:"100g meat (raw) + 150g rice (cooked) + 2 cups salad + 15g feta", cal:412,p:31,f:9,c:48, alts:ALT.L3, carbs:carbRow('rice',150)},
+  L1:{type:"lunch", title:"Lunch", items:"135g meat (raw) + 110g rice (cooked) + 2 cups salad + 30g feta", cal:377,p:40,f:9,c:34, alts:ALT.L1, carbs:carbRow('rice',110)},
+  L2:{type:"lunch", title:"Lunch", items:"125g meat (raw) + 130g rice (cooked) + 2 cups salad + 15g feta", cal:352,p:35,f:5,c:39, alts:ALT.L2, carbs:carbRow('rice',130)},
+  L3:{type:"lunch", title:"Lunch", items:"105g meat (raw) + 130g rice (cooked) + 2 cups salad + 15g feta", cal:332,p:31,f:5,c:39, alts:ALT.L3, carbs:carbRow('rice',130)},
 
-  D1:{type:"dinner", title:"Dinner", items:"130g meat (raw) + 250g kumara (cooked) + 2 cups salad + 30g feta", cal:430,p:38,f:10,c:41, alts:ALT.D1, carbs:carbRow('kumara',250)},
-  D2:{type:"dinner", title:"Dinner", items:"100g meat (raw) + 200g pasta (cooked) + 200g canned tomatoes + 2 cups salad + 30g feta", cal:533,p:40,f:11,c:61, alts:ALT.D2, carbs:carbRow('pasta',200)},
-  D3:{type:"dinner", title:"Dinner", items:"120g meat (raw) + 150g pasta (cooked) + 2 cups salad + 15g feta", cal:400,p:38,f:7,c:40, alts:ALT.D3, carbs:carbRow('pasta',150)},
+  D1:{type:"dinner", title:"Dinner", items:"125g meat (raw) + 275g kumara (cooked) + 2 cups salad + 30g feta", cal:461,p:38,f:9,c:54, alts:ALT.D1, carbs:carbRow('kumara',275)},
+  D2:{type:"dinner", title:"Dinner", items:"95g meat (raw) + 200g pasta (cooked) + 200g canned tomatoes + 2 cups salad + 30g feta", cal:500,p:40,f:10,c:58, alts:ALT.D2, carbs:carbRow('pasta',200)},
+  D3:{type:"dinner", title:"Dinner", items:"120g meat (raw) + 145g pasta (cooked) + 2 cups salad + 15g feta", cal:371,p:38,f:6,c:39, alts:ALT.D3, carbs:carbRow('pasta',145)},
 
-  Sa_m:{type:"snack", title:"Morning Snack",   items:"2 rice cakes + 30g PB + 5g jam + 1 apple",  cal:300,p:8,f:16,c:29, alts:ALT.Sa},
-  Sb_a:{type:"snack", title:"Afternoon Snack", items:"2 rice cakes + 30g PB + 5g jam + 1 banana", cal:340,p:8,f:16,c:40, alts:ALT.Sb},
-  Sc_m:{type:"snack", title:"Morning Snack",   items:"3 rice cakes + 30g PB + 10g jam + 1 apple", cal:332,p:8,f:16,c:37, alts:ALT.Sc},
-  Sd_m:{type:"snack", title:"Morning Snack",   items:"3 rice cakes + 10g PB + 10g jam + 1 apple", cal:215,p:4,f:6,c:34, alts:ALT.Sd},
-  Se_a:{type:"snack", title:"Afternoon Snack", items:"1 bagel (Rebel/Abe's) + 10g PB + 10g jam + 1 banana", cal:430,p:14,f:9,c:74, alts:ALT.Se},
+  Sa_m:{type:"snack", title:"Morning Snack",   items:"2 rice cakes + 30g PB + 5g jam + 1 apple", cal:342,p:7,f:16,c:38, alts:ALT.Sa},
+  Sb_a:{type:"snack", title:"Afternoon Snack", items:"2 rice cakes + 30g PB + 5g jam + 1 banana", cal:379,p:8,f:16,c:47, alts:ALT.Sb},
+  Sc_m:{type:"snack", title:"Morning Snack",   items:"3 rice cakes + 30g PB + 10g jam + 1 apple", cal:389,p:8,f:17,c:48, alts:ALT.Sc},
+  Sd_m:{type:"snack", title:"Morning Snack",   items:"3 rice cakes + 10g PB + 10g jam + 1 apple", cal:265,p:4,f:7,c:45, alts:ALT.Sd},
+  Se_a:{type:"snack", title:"Afternoon Snack", items:"1 bagel (Rebel/Abe's) + 10g PB + 10g jam + 1 banana", cal:425,p:11,f:7,c:75, alts:ALT.Se},
 
-  des1:{type:"dessert", title:"Evening Snack", items:"160g yoghurt + 60g blueberries + 1 kiwifruit + 30g chocolate", cal:315,p:12,f:16,c:26, alts:ALT.des1},
-  des2:{type:"dessert", title:"Evening Snack", items:"160g yoghurt + 20g Rice Bubbles + 60g blueberries + 1 kiwifruit + 15g chocolate", cal:310,p:12,f:10,c:38, alts:ALT.des2},
+  des1:{type:"dessert", title:"Evening Snack", items:"160g yoghurt + 60g blueberries + 1 kiwifruit + 30g chocolate", cal:349,p:17,f:14,c:37, alts:ALT.des1},
+  des2:{type:"dessert", title:"Evening Snack", items:"160g yoghurt + 20g Rice Bubbles + 60g blueberries + 1 kiwifruit + 15g chocolate", cal:344,p:18,f:10,c:44, alts:ALT.des2},
 };
 
 /* ---------- days (the 7 variants) ---------- */
@@ -348,8 +348,7 @@ function render(day){
     h.addEventListener('click',()=>h.parentElement.classList.toggle('open'));
   });
 
-  footEl.innerHTML=`Macros are estimates to guide swaps — pick any alternative on the same day.<br>
-    Pre-workout, breakfast &amp; intra fuel kept as planned (breakfast has no swaps). Built from your meal plan.<br>
+  footEl.innerHTML=`All data from the NZ Food Composition Database<br>
     <span style="opacity:.6">v${APP_VERSION}</span>`;
 }
 
