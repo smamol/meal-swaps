@@ -110,7 +110,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-25.2';
+const APP_VERSION = '2026-08-25.3';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -229,11 +229,11 @@ function ingLabel(ing){
   if (ing.ml != null) return `${ing.ml}ml ${F.l}`;
   return `${ing.g}g ${F.l}`;
 }
-/* A swap qualifies when its re-portioned amount lands close to the base
-   ingredient's pool macro after rounding to a weighable portion: within 10%
-   for gram-measured foods, 25% for unit foods (whole items round coarsely —
-   half a bagel is the smallest step there). And it must stay a portion
-   someone would actually serve. */
+/* A swap qualifies when its re-portioned amount lands within 10% of the base
+   ingredient's pool macro after rounding to a weighable portion (Sandy's
+   rule: nothing gets more headroom than 10%, so coarse unit roundings like
+   half a bagel for a crumpet simply don't appear). It must also stay a
+   portion someone would actually serve. */
 function computeSwaps(ing){
   const pool = POOLS[ing.pool];
   if (!pool) return [];
@@ -263,7 +263,7 @@ function computeSwaps(ing){
       label = `${g}g ${F.l}`;
     }
     const m = scaleV(F.v, g);
-    if (Math.abs(m[pool.b] - target) / target > (F.u ? 0.25 : 0.10)) continue;
+    if (Math.abs(m[pool.b] - target) / target > 0.10) continue;
     out.push({k, e:F.e, label, m, d:m.map((x,i)=>x-base[i])});
   }
   return out;
@@ -287,7 +287,8 @@ const M = {
     {k:'sis_gel', u:1, pool:'intra'}]},
   intraBig:{type:'intra', title:'Intra-Workout', ing:[
     {k:'fruit_pouch', u:1, pool:'intra'}, {k:'sis_gel', u:1, pool:'intra'},
-    {k:'sports_drink', ml:250, pool:'intra'}]},
+    /* no pool: neither pouches nor gels land within 10% of 19g C */
+    {k:'sports_drink', ml:250}]},
   postRefuel:{type:'snack', title:'Post-Training Refuel', ing:[
     {k:'bagel', u:1, pool:'bread'}, {k:'honey', g:20, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}]},
 
