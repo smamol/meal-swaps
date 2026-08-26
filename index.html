@@ -117,7 +117,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-26.3';
+const APP_VERSION = '2026-08-26.4';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -127,18 +127,27 @@ const APP_VERSION = '2026-08-26.3';
    min/max sensible counts. ml = measured in millilitres (v per 100 ml).
    max = largest sensible swap portion in grams — bigger suggestions are dropped. */
 const FOODS = {
-  chicken_raw:    {l:'chicken breast (raw)', e:'🍗', v:[98.5,22.5,0.8,0]},
-  fish_raw:       {l:'white fish (raw)',     e:'🐟', v:[96.6,20.3,1.6,0]},
-  beef_raw:       {l:'lean beef (raw)',      e:'🥩', v:[107.6,20.4,2.8,0]},
-  pork_raw:       {l:'pork loin (raw)',      e:'🐖', v:[110.2,23.2,1.8,0]},
+  /* cookedP = cooked protein per 100 g, from the pinned nz-reference *_cooked
+     entries. Cooked weight is derived, not guessed: protein is conserved when
+     meat is cooked (water/fat leave, protein stays), so
+     cooked g = raw g × raw-protein ÷ cookedP. Prawns are bought cooked. */
+  chicken_raw:    {l:'chicken breast (raw)', e:'🍗', v:[98.5,22.5,0.8,0],  cookedP:28.2},  // chicken_cooked
+  fish_raw:       {l:'white fish (raw)',     e:'🐟', v:[96.6,20.3,1.6,0],  cookedP:25.2},  // fish_cooked
+  beef_raw:       {l:'lean beef (raw)',      e:'🥩', v:[107.6,20.4,2.8,0], cookedP:30.2},  // beef_cooked
+  pork_raw:       {l:'pork loin (raw)',      e:'🐖', v:[110.2,23.2,1.8,0], cookedP:29.4},  // pork_cooked
   prawns_cooked:  {l:'prawns (cooked)',      e:'🍤', v:[104.2,23.7,0.9,0]},
   egg:            {l:'boiled egg',           e:'🥚', v:[130.5,14.6,7.9,0.3], u:{n:'boiled egg',p:'boiled eggs',g:50,step:1,min:1,max:3}},
   lentils_cooked: {l:'lentils (cooked)',     e:'🫘', v:[105.4,7.63,0.5,15.5], max:350},
 
-  rice_cooked:    {l:'rice (cooked)',        e:'🍚', v:[132.4,2.78,0.4,28.7]},
-  pasta_cooked:   {l:'pasta (cooked)',       e:'🍝', v:[135.3,5.05,0.8,25.4]},
+  /* rawC = raw/dry available-carb per 100 g. Available-carb is conserved when a
+     carb cooks (only water changes), so raw/dry g = cooked g × cooked-carb ÷ rawC.
+     dry:true → weighed dry as a grain (rice, pasta); else raw veg (kumara).
+     kumara: NZ FoodFiles raw entry. rice/pasta: NZ retail labels. Couscous and
+     potato have no pinned raw counterpart, so they show cooked only. */
+  rice_cooked:    {l:'rice (cooked)',        e:'🍚', v:[132.4,2.78,0.4,28.7], rawC:79,   dry:true},
+  pasta_cooked:   {l:'pasta (cooked)',       e:'🍝', v:[135.3,5.05,0.8,25.4], rawC:72.5, dry:true},
   couscous:       {l:'couscous (cooked)',    e:'🌾', v:[174.7,6.69,1.0,32.7]},
-  kumara_cooked:  {l:'kumara (cooked)',      e:'🍠', v:[86.8,1.25,0.21,18.8]},
+  kumara_cooked:  {l:'kumara (cooked)',      e:'🍠', v:[86.8,1.25,0.21,18.8], rawC:18.8},
   potato_cooked:  {l:'potato (cooked)',      e:'🥔', v:[54.5,1.67,0.1,10.8], max:500},
 
   bagel:          {l:'bagel',                e:'🥯', v:[260.5,9.55,1.81,49.1], u:{n:'bagel',g:85}},
@@ -232,12 +241,23 @@ function fmtU(u){
   return (w ? w : '') + (f >= 0.25 ? '½' : '') || String(w);
 }
 function unitLabel(F, u){ return `${fmtU(u)} ${u > 1 ? (F.u.p || F.u.n + 's') : F.u.n}`; }
+/* second weight, derived not guessed:
+     raw meats — protein is conserved, so cooked g = raw g × raw-protein ÷ cookedP
+     cooked carbs — available-carb is conserved, so raw/dry g = cooked g × cooked-carb ÷ rawC
+   Rounded to 5 g for larger weights, 1 g for the small portions. */
+function roundW(g){ return g >= 50 ? Math.round(g / 5) * 5 : Math.round(g); }
+function weightTag(k, g){
+  const F = FOODS[k];
+  if (F.cookedP != null) return ` · ${roundW(g * F.v[1] / F.cookedP)}g cooked`;
+  if (F.rawC != null) return ` · ${roundW(g * F.v[3] / F.rawC)}g ${F.dry ? 'dry' : 'raw'}`;
+  return '';
+}
 function ingLabel(ing){
-  if (ing.t) return ing.t;
+  if (ing.t) return ing.t + (ing.g != null ? weightTag(ing.k, ing.g) : '');
   const F = FOODS[ing.k];
   if (ing.u != null) return unitLabel(F, ing.u);
   if (ing.ml != null) return `${ing.ml}ml ${F.l}`;
-  return `${ing.g}g ${F.l}`;
+  return `${ing.g}g ${F.l}${weightTag(ing.k, ing.g)}`;
 }
 /* A swap qualifies when its re-portioned amount lands within 10% of the base
    ingredient's pool macro after rounding to a weighable portion (Sandy's
@@ -270,7 +290,7 @@ function computeSwaps(ing){
     } else {
       g = need < 20 ? Math.round(need) : Math.round(need / 5) * 5;
       if (g < 5 || g > (F.max || 400)) continue;
-      label = `${g}g ${F.l}`;
+      label = `${g}g ${F.l}${weightTag(k, g)}`;
     }
     const m = scaleV(F.v, g);
     if (Math.abs(m[pool.b] - target) / target > 0.10) continue;
