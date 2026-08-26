@@ -117,7 +117,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-26.2';
+const APP_VERSION = '2026-08-26.3';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -178,8 +178,8 @@ const FOODS = {
   muesli:         {l:'muesli',               e:'🥣', v:[393.4,10.8,10.8,59.2], max:60},
   weetbix:        {l:'Weet-Bix',             e:'🌾', v:[329.8,12.5,2.3,58.4], u:{n:'Weet-Bix',p:'Weet-Bix',g:15,max:4}},
 
-  /* whole-snack alternative — v per prepared 45g pancake via nominal 100 g unit */
-  swolecake:      {l:'SwoleCakes protein pancake', e:'🥞', v:[82,6.15,1.5,10.55], u:{n:'SwoleCakes protein pancake',p:'SwoleCakes protein pancakes',g:100,step:1,max:6}},
+  /* whole-snack alternative — per 100g DRY mix (serving = 42g; milk listed separately) */
+  swolecake:      {l:'SwoleCakes pancake mix', e:'🥞', v:[365.7,28.4,5.1,49.8], max:120},
 
   /* intra fuels — v per unit via nominal 100 g unit (label values, per item) */
   sis_gel:        {l:'SiS isotonic gel',     e:'💧', v:[87,0,0,22], u:{n:'SiS isotonic gel',p:'SiS isotonic gels',g:100,step:0.5,max:3}},
@@ -353,7 +353,7 @@ const M = {
   Sb_a:{type:'snack', title:'Afternoon Snack', ing:[
     {k:'rice_cake', u:2, pool:'bread'}, {k:'peanut_butter', g:30, pool:'fats'},
     {k:'jam', g:5, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}]}]},
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
   Sc_m:{type:'snack', title:'Morning Snack', ing:[
     {k:'rice_cake', u:3, pool:'bread'}, {k:'peanut_butter', g:30, pool:'fats'},
     {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
@@ -363,17 +363,17 @@ const M = {
   Se_a:{type:'snack', title:'Afternoon Snack', ing:[
     {k:'bagel', u:1, t:"1 bagel (Rebel/Abe's)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
     {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}, {k:'honey', g:20}]}]},
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:20}]}]},
 
   des1:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'blueberries', g:60, pool:'fruit'},
     {k:'kiwifruit', u:1, pool:'fruit'}, {k:'dark_choc', g:30, pool:'treat'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}]}]},
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
   des2:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20, pool:'cereal'},
     {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
     {k:'dark_choc', g:15, pool:'treat'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}]}]},
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
 };
 
 /* ---------- days (the 7 variants) ---------- */
