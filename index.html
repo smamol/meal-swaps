@@ -117,7 +117,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-26.1';
+const APP_VERSION = '2026-08-26.2';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -177,6 +177,9 @@ const FOODS = {
   granola:        {l:'granola',              e:'🥣', v:[425.4,8.81,14.4,60.0], max:60},
   muesli:         {l:'muesli',               e:'🥣', v:[393.4,10.8,10.8,59.2], max:60},
   weetbix:        {l:'Weet-Bix',             e:'🌾', v:[329.8,12.5,2.3,58.4], u:{n:'Weet-Bix',p:'Weet-Bix',g:15,max:4}},
+
+  /* whole-snack alternative — v per prepared 45g pancake via nominal 100 g unit */
+  swolecake:      {l:'SwoleCakes protein pancake', e:'🥞', v:[82,6.15,1.5,10.55], u:{n:'SwoleCakes protein pancake',p:'SwoleCakes protein pancakes',g:100,step:1,max:6}},
 
   /* intra fuels — v per unit via nominal 100 g unit (label values, per item) */
   sis_gel:        {l:'SiS isotonic gel',     e:'💧', v:[87,0,0,22], u:{n:'SiS isotonic gel',p:'SiS isotonic gels',g:100,step:0.5,max:3}},
@@ -275,6 +278,18 @@ function computeSwaps(ing){
   }
   return out;
 }
+/* Whole-meal alternatives (meal.mealSwaps): curated combos that replace the
+   entire snack — e.g. protein pancakes + a banana — calorie-matched to the
+   meal within the same 10% rule, other macros shown as honest differences. */
+function mealSwapAlts(meal){
+  if (!meal.mealSwaps) return [];
+  const base = mealMacros(meal);
+  return meal.mealSwaps.map(ms => {
+    const m = [0,0,0,0];
+    for (const p of ms.parts){ const v = ingMacros(p); for (let i=0;i<4;i++) m[i]+=v[i]; }
+    return {e: ms.e, label: ms.parts.map(ingLabel).join(' + '), m, d: m.map((x,i)=>x-base[i]), parts: ms.parts};
+  });
+}
 
 /* ---------- meals — Livi's plan, as written ---------- */
 const M = {
@@ -337,7 +352,8 @@ const M = {
     {k:'jam', g:5, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
   Sb_a:{type:'snack', title:'Afternoon Snack', ing:[
     {k:'rice_cake', u:2, pool:'bread'}, {k:'peanut_butter', g:30, pool:'fats'},
-    {k:'jam', g:5, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}]},
+    {k:'jam', g:5, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}]}]},
   Sc_m:{type:'snack', title:'Morning Snack', ing:[
     {k:'rice_cake', u:3, pool:'bread'}, {k:'peanut_butter', g:30, pool:'fats'},
     {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
@@ -346,15 +362,18 @@ const M = {
     {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
   Se_a:{type:'snack', title:'Afternoon Snack', ing:[
     {k:'bagel', u:1, t:"1 bagel (Rebel/Abe's)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
-    {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}]},
+    {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}, {k:'honey', g:20}]}]},
 
   des1:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'blueberries', g:60, pool:'fruit'},
-    {k:'kiwifruit', u:1, pool:'fruit'}, {k:'dark_choc', g:30, pool:'treat'}]},
+    {k:'kiwifruit', u:1, pool:'fruit'}, {k:'dark_choc', g:30, pool:'treat'}],
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}]}]},
   des2:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20, pool:'cereal'},
     {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
-    {k:'dark_choc', g:15, pool:'treat'}]},
+    {k:'dark_choc', g:15, pool:'treat'}],
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', u:3}, {k:'banana', u:1}]}]},
 };
 
 /* ---------- days (the 7 variants) ---------- */
@@ -377,9 +396,7 @@ const STYLE = {
   dinner:   {em:"🌙", bg:"#3a1820", fg:"#fb7185"},
   dessert:  {em:"🍫", bg:"#2a1838", fg:"#d8b4fe"},
 };
-const BASIS_NAME = {1:'same protein', 2:'same fat', 3:'same carbs'};
-const BASIS_CLS  = {1:'m-pro', 2:'m-fat', 3:'m-carb'};
-const BASIS_LTR  = {1:'P', 2:'F', 3:'C'};
+const BASIS_NAME = {0:'same calories', 1:'same protein', 2:'same fat', 3:'same carbs'};
 
 const tabsEl=document.getElementById('tabs');
 const statsEl=document.getElementById('stats');
@@ -395,18 +412,24 @@ function ingSub(m){
   return `${R(m[0])} cal · ${R(m[1])}P · ${R(m[2])}F · ${R(m[3])}C`;
 }
 function deltaLine(swap, basis){
+  const DEF = [[0,'m-cal','cal',''],[1,'m-pro','P','g '],[2,'m-fat','F','g '],[3,'m-carb','C','g ']];
   const parts = [];
+  const [bi, bcls, bltr, bunit] = DEF[basis];
   const db = R(swap.d[basis]);
-  parts.push(`<span class="${BASIS_CLS[basis]}">${Math.abs(db) < 1 ? '=' : (db > 0 ? '+' : '−') + Math.abs(db) + 'g '}${BASIS_LTR[basis]}</span>`);
-  for (const [i, cls, ltr] of [[1,'m-pro','P'],[2,'m-fat','F'],[3,'m-carb','C']]){
+  parts.push(`<span class="${bcls}">${Math.abs(db) < 1 ? '=' : (db > 0 ? '+' : '−') + Math.abs(db) + bunit}${bltr}</span>`);
+  for (const [i, cls, ltr, unit] of DEF){
     if (i === basis) continue;
     const d = R(swap.d[i]);
-    if (Math.abs(d) < 1) continue;
-    parts.push(`<span class="${cls}">${d > 0 ? '+' : '−'}${Math.abs(d)}g ${ltr}</span>`);
+    const min = i === 0 ? 5 : 1;
+    if (Math.abs(d) < min) continue;
+    parts.push(`<span class="${cls}">${d > 0 ? '+' : '−'}${Math.abs(d)}${unit}${ltr}</span>`);
   }
-  const dc = R(swap.d[0]);
-  if (Math.abs(dc) >= 5) parts.push(`<span class="m-cal">${dc > 0 ? '+' : '−'}${Math.abs(dc)} cal</span>`);
   return parts.length > 1 || Math.abs(db) >= 1 ? parts.join(' · ') : parts[0] + ' · near-exact match';
+}
+function swapRows(swaps, basis){
+  return swaps.map(sw=>`<div class="swap"><div class="swap-em">${sw.e}</div><div class="swap-txt">
+    <div class="swap-name">${sw.label}</div>
+    <div class="swap-d">${deltaLine(sw, basis)}</div></div></div>`).join('');
 }
 
 function render(day){
@@ -468,15 +491,19 @@ function render(day){
     const nSwap = meal.ing.filter(i=>i.pool && computeSwaps(i).length).length;
     const badge = nSwap ? `<span class="badge">${nSwap} swappable</span>`
                         : `<span class="badge none">as planned</span>`;
-    return `<div class="meal">
+    const mAlts = mealSwapAlts(meal);
+    const msHtml = mAlts.length ? `<div class="fold-swaps">
+        <div class="swaps-label">Swap the whole snack — ${BASIS_NAME[0]}</div>${swapRows(mAlts, 0)}</div>` : '';
+    return `<div class="meal ${mAlts.length?'swappable':''}">
       <div class="meal-head">
         <div class="icon" style="background:${s.bg};color:${s.fg}">${s.em}</div>
         <div class="meal-body">
           <div class="meal-kicker"><span class="name">${meal.title}</span>${badge}</div>
           <div class="macros">${macroLine(mm)}</div>
         </div>
+        ${mAlts.length?'<div class="chev">▼</div>':''}
       </div>
-      <div class="ings">${rows}</div></div>`;
+      <div class="ings">${rows}</div>${msHtml}</div>`;
   }).join('');
 
   mealsEl.querySelectorAll('.ing.swappable .ing-line').forEach(h=>{
