@@ -117,7 +117,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-26.4';
+const APP_VERSION = '2026-08-28.1';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -136,6 +136,8 @@ const FOODS = {
   beef_raw:       {l:'lean beef (raw)',      e:'🥩', v:[107.6,20.4,2.8,0], cookedP:30.2},  // beef_cooked
   pork_raw:       {l:'pork loin (raw)',      e:'🐖', v:[110.2,23.2,1.8,0], cookedP:29.4},  // pork_cooked
   prawns_cooked:  {l:'prawns (cooked)',      e:'🍤', v:[104.2,23.7,0.9,0]},
+  /* tinned tuna is eaten as it comes out of the tin — drained values, no cooked weight */
+  tuna_water:     {l:'tinned tuna in spring water (drained)', e:'🐟', v:[117.1,26.6,1.0,0], max:200},
   egg:            {l:'boiled egg',           e:'🥚', v:[130.5,14.6,7.9,0.3], u:{n:'boiled egg',p:'boiled eggs',g:50,step:1,min:1,max:3}},
   lentils_cooked: {l:'lentils (cooked)',     e:'🫘', v:[105.4,7.63,0.5,15.5], max:350},
 
@@ -211,7 +213,7 @@ const FOODS = {
    An ingredient's swaps are the other pool members, re-portioned to the same
    amount of that macro; the other macros are shown as honest differences. */
 const POOLS = {
-  protein: {b:1, keys:['chicken_raw','fish_raw','beef_raw','pork_raw','prawns_cooked','egg','lentils_cooked']},
+  protein: {b:1, keys:['chicken_raw','fish_raw','beef_raw','pork_raw','prawns_cooked','tuna_water','egg','lentils_cooked']},
   starch:  {b:3, keys:['rice_cooked','pasta_cooked','couscous','kumara_cooked','potato_cooked']},
   bread:   {b:3, keys:['bagel','crumpet','english_muffin','vogels','fruit_bread','rice_cake','corn_thin','wrap']},
   fats:    {b:2, keys:['peanut_butter','almond_butter','almonds','pumpkin_seeds','sunflower_seeds','mixed_seeds','avocado']},
