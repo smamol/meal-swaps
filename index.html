@@ -37,13 +37,16 @@
     padding:9px 14px; border-radius:999px; font-size:14px; font-weight:600; white-space:nowrap; cursor:pointer;
     transition:.15s}
   .tab .kc{display:block; font-size:11px; font-weight:600; color:var(--muted2); margin-top:1px}
+  .tab.archived{opacity:.5}
+  .tab.archived.active{opacity:1}
   .tab.active{background:var(--accent); border-color:var(--accent); color:#fff}
   .tab.active .kc{color:rgba(255,255,255,.85)}
 
   /* targets */
   .targets{background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:16px; margin:2px 0 18px}
   .targets h2{font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted);
-    margin:0 0 12px; font-weight:700}
+    margin:0 0 4px; font-weight:700}
+  .targets-sub{font-size:12px; color:var(--muted2); margin:0 0 12px}
   .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:8px}
   .stat{text-align:center}
   .stat b{display:block; font-size:21px; font-weight:800; letter-spacing:-.02em}
@@ -109,6 +112,7 @@
 <div class="wrap">
   <div class="targets">
     <h2 id="targets-title">Day Targets</h2>
+    <p class="targets-sub" id="targets-sub"></p>
     <div class="stats" id="stats"></div>
   </div>
   <div id="meals"></div>
@@ -117,7 +121,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-28.1';
+const APP_VERSION = '2026-08-28.2';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -391,6 +395,28 @@ const M = {
     {k:'yoghurt', g:160}, {k:'blueberries', g:60, pool:'fruit'},
     {k:'kiwifruit', u:1, pool:'fruit'}, {k:'dark_choc', g:30, pool:'treat'}],
     mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
+  /* --- heavy-day meals (added Aug 2026, see hyrox/Daily_Nutrition_Targets.md) --- */
+  intraXL:{type:'intra', title:'Intra-Workout XL', ing:[
+    {k:'fruit_pouch', u:1, pool:'intra'}, {k:'sis_gel', u:2, pool:'intra'},
+    /* no pool: neither pouches nor gels land within 10% of 38g C */
+    {k:'sports_drink', ml:500}]},
+  L4:{type:'lunch', title:'Lunch', ing:[
+    {k:'chicken_raw', g:105, t:'105g meat (raw)', pool:'protein'},
+    {k:'rice_cooked', g:130, pool:'starch'},
+    {k:'salad', g:140, t:'2 cups salad'},
+    {k:'feta', g:35, pool:'fetaFree'}]},
+  D4:{type:'dinner', title:'Dinner', ing:[
+    {k:'chicken_raw', g:95, t:'95g meat (raw)', pool:'protein'},
+    {k:'pasta_cooked', g:280, pool:'starch'},
+    {k:'canned_tomato', g:200, t:'200g canned tomatoes'},
+    {k:'salad', g:140, t:'2 cups salad'},
+    {k:'feta', g:30, pool:'fetaFree'}]},
+  des3:{type:'dessert', title:'Evening Snack', ing:[
+    {k:'yoghurt', g:160}, {k:'rice_bubbles', g:40, pool:'cereal'},
+    {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
+    {k:'dark_choc', g:25, pool:'treat'}],
+    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:30}]}]},
+
   des2:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20, pool:'cereal'},
     {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
@@ -398,14 +424,34 @@ const M = {
     mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
 };
 
-/* ---------- days (the 7 variants) ---------- */
+/* ---------- days ----------
+   Named by training load (Aug 2026). The plans were renamed because the old
+   names ran a tier behind the actual week: "Double training day PLUS" is a
+   light day at current volume and "Big day" is an ordinary Wednesday.
+   `was` keeps the old name visible on the tab. See hyrox/Daily_Nutrition_Targets.md */
 const DAYS = [
-  {name:"Light training session",     hint:"single session",        meals:[M.preBanana,M.b436,M.Sa_m,M.L1,M.Sb_a,M.D1,M.des1]},
-  {name:"Mod training session",       hint:"single + intra",        meals:[M.preCrumpet,M.intra,M.b436,M.Sd_m,M.L2,M.Se_a,M.D3,M.des2]},
-  {name:"Mod training session PLUS",  hint:"single + intra, bigger", meals:[M.preCrumpet,M.intra,M.b436,M.Sc_m,M.L1,M.Se_a,M.D3,M.des2]},
-  {name:"Double training day",        hint:"two sessions",          meals:[M.preBanana,M.b490,M.Sd_m,M.L3,M.prePlus,M.intra,M.D2,M.des2]},
-  {name:"Double training day PLUS",   hint:"two sessions, bigger",   meals:[M.preCrumpet,M.b490,M.Sc_m,M.L1,M.prePlus,M.intra,M.D2,M.des2]},
-  {name:"Big day",                    hint:"2.5h — easy run + aerobic conditioning", meals:[M.preCrumpet,M.intraBig,M.b490,M.postRefuel,M.Sc_m,M.L1,M.Se_a,M.D2,M.des2]},
+  {name:"Rest day", was:'was \u201CLight training session\u201D',
+   hint:"no session \u2014 Sunday",
+   meals:[M.preBanana,M.b436,M.Sa_m,M.L1,M.Sb_a,M.D1,M.des1]},
+  {name:"Light day", was:'was \u201CDouble training day PLUS\u201D',
+   hint:"gym only, up to 75 min \u2014 Tuesday",
+   meals:[M.preCrumpet,M.b490,M.Sc_m,M.L1,M.prePlus,M.intra,M.D2,M.des2]},
+  {name:"Moderate day", was:'was \u201CBig day\u201D',
+   hint:"60\u2013100 min quality \u2014 Wednesday, Friday",
+   meals:[M.preCrumpet,M.intraBig,M.b490,M.postRefuel,M.Sc_m,M.L1,M.Se_a,M.D2,M.des2]},
+  {name:"Heavy day", was:'new \u2014 Aug 2026',
+   hint:"2.5 hrs+, or split AM/PM \u2014 Monday, Thursday, Saturday",
+   meals:[M.preCrumpet,M.b490,M.Sc_m,M.L4,M.prePlus,M.intraXL,M.postRefuel,M.D4,M.des3]},
+
+  /* Not in the current rotation \u2014 kept for reference. All three land in a
+     2,400\u20132,570 band that matches no day in the week, and two sit under the
+     65 g fat floor (1 g/kg). */
+  {name:"Mod training session", was:'not in rotation', hint:"single + intra", archived:true,
+   meals:[M.preCrumpet,M.intra,M.b436,M.Sd_m,M.L2,M.Se_a,M.D3,M.des2]},
+  {name:"Mod training session PLUS", was:'not in rotation', hint:"single + intra, bigger", archived:true,
+   meals:[M.preCrumpet,M.intra,M.b436,M.Sc_m,M.L1,M.Se_a,M.D3,M.des2]},
+  {name:"Double training day", was:'not in rotation', hint:"two sessions", archived:true,
+   meals:[M.preBanana,M.b490,M.Sd_m,M.L3,M.prePlus,M.intra,M.D2,M.des2]},
 ];
 
 /* ---------- presentation ---------- */
@@ -424,6 +470,7 @@ const tabsEl=document.getElementById('tabs');
 const statsEl=document.getElementById('stats');
 const mealsEl=document.getElementById('meals');
 const titleEl=document.getElementById('targets-title');
+const subEl=document.getElementById('targets-sub');
 const footEl=document.getElementById('foot');
 
 const R = x => Math.round(x);
@@ -460,6 +507,7 @@ function render(day){
     return [a[0]+m[0], a[1]+m[1], a[2]+m[2], a[3]+m[3]];
   }, [0,0,0,0]);
   titleEl.textContent = `${day.name} — Day Total`;
+  subEl.textContent = day.archived ? `${day.hint} · ${day.was}` : `${day.hint} · ${day.was}`;
   statsEl.innerHTML = `
     <div class="stat cal"><b>${R(t[0])}</b><span>cal</span></div>
     <div class="stat pro"><b>${R(t[1])}g</b><span>protein</span></div>
@@ -542,19 +590,19 @@ function render(day){
 let active=0;
 function buildTabs(){
   tabsEl.innerHTML=DAYS.map((d,i)=>
-    `<div class="tab ${i===active?'active':''}" data-i="${i}">${d.name}<span class="kc">${d.hint}</span></div>`
+    `<div class="tab ${i===active?'active':''}${d.archived?' archived':''}" data-i="${i}">${d.name}<span class="kc">${d.was}</span></div>`
   ).join('');
   tabsEl.querySelectorAll('.tab').forEach(t=>{
     t.addEventListener('click',()=>{
       active=+t.dataset.i;
-      localStorage.setItem('mealday',active);
+      localStorage.setItem('mealday2',active);
       buildTabs(); render(DAYS[active]);
       window.scrollTo({top:0,behavior:'smooth'});
     });
   });
 }
 
-active=Math.min(+(localStorage.getItem('mealday')||0),DAYS.length-1);
+active=Math.min(+(localStorage.getItem('mealday2')||0),DAYS.length-1);
 buildTabs();
 render(DAYS[active]);
 
