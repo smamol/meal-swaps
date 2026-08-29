@@ -121,7 +121,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-29.1';
+const APP_VERSION = '2026-08-29.2';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -142,8 +142,8 @@ const FOODS = {
   prawns_cooked:  {l:'prawns (cooked)',      e:'🍤', v:[104.2,23.7,0.9,0]},
   /* tinned tuna is eaten as it comes out of the tin — drained values, no cooked weight */
   tuna_water:     {l:'tinned tuna in spring water (drained)', e:'🐟', v:[117.1,26.6,1.0,0], max:200},
-  egg:            {l:'boiled egg',           e:'🥚', v:[130.5,14.6,7.9,0.3], u:{n:'boiled egg',p:'boiled eggs',g:50,step:1,min:1,max:3}},
-  lentils_cooked: {l:'lentils (cooked)',     e:'🫘', v:[105.4,7.63,0.5,15.5], max:350},
+  egg:            {l:'boiled egg',           e:'🥚', v:[130.5,14.6,7.9,0.3], u:{n:'boiled egg',p:'boiled eggs',g:50,step:1,min:1,max:4}},
+  lentils_cooked: {l:'lentils (cooked)',     e:'🫘', v:[105.4,7.63,0.5,15.5], max:400},
 
   /* rawC = raw/dry available-carb per 100 g. Available-carb is conserved when a
      carb cooks (only water changes), so raw/dry g = cooked g × cooked-carb ÷ rawC.
@@ -154,7 +154,7 @@ const FOODS = {
   pasta_cooked:   {l:'pasta (cooked)',       e:'🍝', v:[135.3,5.05,0.8,25.4], rawC:72.5, dry:true},
   couscous:       {l:'couscous (cooked)',    e:'🌾', v:[174.7,6.69,1.0,32.7]},
   kumara_cooked:  {l:'kumara (cooked)',      e:'🍠', v:[86.8,1.25,0.21,18.8], rawC:18.8},
-  potato_cooked:  {l:'potato (cooked)',      e:'🥔', v:[54.5,1.67,0.1,10.8], rawC:12.8, max:500},
+  potato_cooked:  {l:'potato (cooked)',      e:'🥔', v:[54.5,1.67,0.1,10.8], rawC:12.8, max:700},
 
   bagel:          {l:'bagel',                e:'🥯', v:[260.5,9.55,1.81,49.1], u:{n:'bagel',g:85}},
   crumpet:        {l:'crumpet',              e:'🥞', v:[178.3,6.56,1.0,34.0], u:{n:'crumpet',g:50}},
@@ -277,7 +277,7 @@ function computeSwaps(ing){
   if (!target) return [];
   const out = [];
   for (const k of pool.keys){
-    if (k === ing.k) continue;
+    if (k === ing.k && !ing.generic) continue;   /* generic slots list their own base food back, rendered "as planned" */
     const F = FOODS[k], per = F.v[pool.b];
     if (!per) continue;
     const need = target / per * 100;
@@ -300,7 +300,7 @@ function computeSwaps(ing){
     }
     const m = scaleV(F.v, g);
     if (Math.abs(m[pool.b] - target) / target > 0.10) continue;
-    out.push({k, e:F.e, label, m, d:m.map((x,i)=>x-base[i])});
+    out.push({k, e:F.e, label, m, d:m.map((x,i)=>x-base[i]), self:k===ing.k});
   }
   return out;
 }
@@ -341,35 +341,35 @@ const M = {
     {k:'bagel', u:1, pool:'bread'}, {k:'honey', g:20, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}]},
 
   L1:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:135, t:'135g meat (raw)', pool:'protein'},
-    {k:'rice_cooked', g:110, pool:'starch'},
+    {k:'chicken_raw', g:135, pool:'protein', generic:true},
+    {k:'rice_cooked', g:110, pool:'starch', generic:true},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:30, pool:'fetaFree'}]},
   L2:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:125, t:'125g meat (raw)', pool:'protein'},
-    {k:'rice_cooked', g:130, pool:'starch'},
+    {k:'chicken_raw', g:125, pool:'protein', generic:true},
+    {k:'rice_cooked', g:130, pool:'starch', generic:true},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:15, pool:'fetaFree'}]},
   L3:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:105, t:'105g meat (raw)', pool:'protein'},
-    {k:'rice_cooked', g:130, pool:'starch'},
+    {k:'chicken_raw', g:105, pool:'protein', generic:true},
+    {k:'rice_cooked', g:130, pool:'starch', generic:true},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:15, pool:'fetaFree'}]},
 
   D1:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:125, t:'125g meat (raw)', pool:'protein'},
-    {k:'kumara_cooked', g:275, pool:'starch'},
+    {k:'chicken_raw', g:125, pool:'protein', generic:true},
+    {k:'kumara_cooked', g:275, pool:'starch', generic:true},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:30, pool:'fetaFree'}]},
   D2:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:95, t:'95g meat (raw)', pool:'protein'},
-    {k:'pasta_cooked', g:200, pool:'starch'},
+    {k:'chicken_raw', g:95, pool:'protein', generic:true},
+    {k:'pasta_cooked', g:200, pool:'starch', generic:true},
     {k:'canned_tomato', g:200, t:'200g canned tomatoes'},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:30, pool:'fetaFree'}]},
   D3:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:120, t:'120g meat (raw)', pool:'protein'},
-    {k:'pasta_cooked', g:145, pool:'starch'},
+    {k:'chicken_raw', g:120, pool:'protein', generic:true},
+    {k:'pasta_cooked', g:145, pool:'starch', generic:true},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:15, pool:'fetaFree'}]},
 
@@ -401,13 +401,13 @@ const M = {
     /* no pool: neither pouches nor gels land within 10% of 38g C */
     {k:'sports_drink', ml:500}]},
   L4:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:105, t:'105g meat (raw)', pool:'protein'},
-    {k:'rice_cooked', g:130, pool:'starch'},
+    {k:'chicken_raw', g:105, pool:'protein', generic:true},
+    {k:'rice_cooked', g:130, pool:'starch', generic:true},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:35, pool:'fetaFree'}]},
   D4:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:95, t:'95g meat (raw)', pool:'protein'},
-    {k:'pasta_cooked', g:280, pool:'starch'},
+    {k:'chicken_raw', g:95, pool:'protein', generic:true},
+    {k:'pasta_cooked', g:280, pool:'starch', generic:true},
     {k:'canned_tomato', g:200, t:'200g canned tomatoes'},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:30, pool:'fetaFree'}]},
@@ -481,6 +481,7 @@ function ingSub(m){
   return `${R(m[0])} cal · ${R(m[1])}P · ${R(m[2])}F · ${R(m[3])}C`;
 }
 function deltaLine(swap, basis){
+  if (swap.self) return 'as planned';   /* generic slot listing its own base */
   const DEF = [[0,'m-cal','cal',''],[1,'m-pro','P','g '],[2,'m-fat','F','g '],[3,'m-carb','C','g ']];
   const parts = [];
   const [bi, bcls, bltr, bunit] = DEF[basis];
