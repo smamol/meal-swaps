@@ -121,7 +121,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-11.3';
+const APP_VERSION = '2026-09-11.4';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -156,16 +156,19 @@ const FOODS = {
   kumara_cooked:  {l:'kumara (cooked)',      e:'🍠', v:[86.8,1.25,0.21,18.8], rawC:18.8},
   potato_cooked:  {l:'potato (cooked)',      e:'🥔', v:[54.5,1.67,0.1,10.8], rawC:12.8, max:700},
 
-  bagel:          {l:'bagel',                e:'🥯', v:[260.5,9.55,1.81,49.1], u:{n:'bagel',g:85}},
+  /* pinned to Abe's "The Natural" (plain) bagel, 90g each — Sandy's brand */
+  bagel:          {l:"bagel (Abe's, plain)", e:'🥯', v:[277,9.59,1.35,55.7], u:{n:"Abe's bagel",p:"Abe's bagels",g:90}},
   crumpet:        {l:'crumpet',              e:'🥞', v:[178.3,6.56,1.0,34.0], u:{n:'crumpet',g:50}},
   english_muffin: {l:'English muffin',       e:'🫓', v:[217.0,8.78,2.15,38.4], u:{n:'English muffin',g:65}},
   vogels:         {l:"slice Vogel's",        e:'🍞', v:[267.7,10.8,8.48,33.4], u:{n:"slice Vogel's",p:"slices Vogel's",g:40}},
   fruit_bread:    {l:'slice fruit toast',    e:'🍇', v:[265.8,8.8,3.7,47.3], u:{n:'slice fruit toast',p:'slices fruit toast',g:40}},
-  rice_cake:      {l:'rice cake',            e:'🍘', v:[368.1,6.55,3.75,75.7], u:{n:'rice cake',g:9}},
+  /* pinned to Ceres Organics Brown Rice Cakes, Original — Sandy's brand */
+  rice_cake:      {l:'rice cake (Ceres Organic)', e:'🍘', v:[380,8.0,2.1,82], u:{n:'Ceres rice cake',g:9}},
   corn_thin:      {l:'corn thin',            e:'🌽', v:[344.2,8.13,1.2,73.3], u:{n:'corn thin',g:6}},
   wrap:           {l:'large wrap',           e:'🌯', v:[279.6,8.75,7.31,42.1], u:{n:'large wrap',g:60}},
 
-  peanut_butter:  {l:'peanut butter',        e:'🥜', v:[616.6,19.1,50.2,16.4], max:60},
+  /* pinned to Pic's Peanut Butter, Crunchy — Sandy's brand */
+  peanut_butter:  {l:"peanut butter (Pic's Crunchy)", e:'🥜', v:[595,26.7,47.8,14.3], max:60},
   almond_butter:  {l:'almond butter',        e:'🥜', v:[595.1,20.1,53.0,5.65], max:60},
   almonds:        {l:'almonds',              e:'🌰', v:[595.1,20.1,53.0,5.65], max:50},
   pumpkin_seeds:  {l:'pumpkin seeds',        e:'🎃', v:[568.8,31.1,47.5,1.4], max:40},
@@ -226,7 +229,11 @@ const FOODS = {
   canned_tomato:  {l:'canned tomatoes',      e:'🍅', v:[18.6,1.13,0.1,2.54]},
   oats:           {l:'oats',                 e:'🥣', v:[360.9,12.2,7.24,56.7]},
   flaxseed:       {l:'flaxseed',             e:'🌱', v:[451.7,18.4,37.0,0.7]},
-  whey:           {l:'whey',                 e:'💪', v:[372.8,78.8,4.1,4.2]},
+  /* pinned to Go Good Whey Protein Isolate, Unflavoured — Sandy's brand */
+  /* pinned to Go Good Whey Protein Isolate, Unflavoured — Sandy's brand.
+     Keyed whey_isolate (not whey) since Brenda's/Anna's apps pin a
+     different, generic whey product to the shared "whey" reference key */
+  whey_isolate:   {l:'whey (Go Good Isolate, unflavoured)', e:'💪', v:[375,89,1,1]},
   almond_milk:    {l:'almond milk',          e:'🥛', v:[17.0,0.54,1.4,0.2]},
 };
 
@@ -355,7 +362,7 @@ const M = {
     {k:'sis_gel', u:1, pool:'intra'}]},
 
   breakfast:{type:'breakfast', title:'Breakfast', folded:true, ing:[
-    {k:'oats', g:75}, {k:'flaxseed', g:10}, {k:'whey', g:30, t:'30g whey'},
+    {k:'oats', g:75}, {k:'flaxseed', g:10}, {k:'whey_isolate', g:30},
     {k:'almond_milk', ml:150}, {k:'blueberries', g:60}],
     /* footnoted alternatives from the Sep 2026 plan — tuned to hold the
        flat 10% calorie rule (287 cal Rokeby alone undershoots by 18%, so
@@ -377,7 +384,7 @@ const M = {
     {k:'feta', g:15, pool:'fetaFree'}]},
 
   afternoonSnack:{type:'snack', title:'Afternoon Snack', ing:[
-    {k:'bagel', u:1, t:"1 bagel (or 2x crumpets)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
+    {k:'bagel', u:1, t:"1 Abe's bagel (or 2x crumpets)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
     {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
     mealSwaps:[
       {e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:20}]},
