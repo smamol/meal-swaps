@@ -121,7 +121,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-11.1';
+const APP_VERSION = '2026-09-11.2';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -207,6 +207,12 @@ const FOODS = {
      label's 287 cal/30g P/6.4g F/27.2g C */
   rokeby_smoothie:{l:'Rokeby protein smoothie (Dutch Chocolate)', e:'🥤', v:[67.5,7.06,1.51,6.4],
     u:{n:'Rokeby protein smoothie',g:425,step:1,min:1,max:1}},
+  /* whole-serving alternative — pinned to the 250ml Sanitarium Up&Go Protein
+     Energize Vanilla bottle label (85 cal/7.1g P/1.8g F/9.6g C per 100ml, so
+     212.5 cal/17.75g P/4.5g F/24g C per bottle); considerably less protein-dense
+     than Rokeby (30g P/425ml vs 17.75g P/250ml) */
+  upandgo_vanilla:{l:'Up&Go Protein Energize (Vanilla)', e:'🥛', v:[85,7.1,1.8,9.6],
+    u:{n:'Up&Go Protein Energize (250ml bottle)',g:250,step:1,min:1,max:2}},
 
   /* intra fuels — v per unit via nominal 100 g unit (label values, per item) */
   sis_gel:        {l:'SiS isotonic gel',     e:'💧', v:[87,0,0,22], u:{n:'SiS isotonic gel',p:'SiS isotonic gels',g:100,step:0.5,max:3}},
@@ -348,10 +354,13 @@ const M = {
     /* footnoted alternatives from the Sep 2026 plan — tuned to hold the
        flat 10% calorie rule (287 cal Rokeby alone undershoots by 18%, so
        2 bananas top it up; 20g cheese alone leaves the bagel+chutney combo
-       25%+ short, so cheese is scaled to 50g to close the gap) */
+       25%+ short, so cheese is scaled to 50g to close the gap). Up&Go added
+       on Sandy's request — 212.5 cal alone undershoots by 56%, same 2-banana
+       top-up lands it at −9%, the widest margin of the three */
     mealSwaps:[
       {e:'🥤', parts:[{k:'rokeby_smoothie', u:1}, {k:'banana', u:2}]},
-      {e:'🥯', parts:[{k:'bagel', u:1}, {k:'cheese', g:50}, {k:'chutney', g:20}]}
+      {e:'🥯', parts:[{k:'bagel', u:1}, {k:'cheese', g:50}, {k:'chutney', g:20}]},
+      {e:'🥛', parts:[{k:'upandgo_vanilla', u:1}, {k:'banana', u:2}]}
     ]},
 
   morningSnack:{type:'snack', title:'Morning Snack', ing:[
