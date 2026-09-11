@@ -144,7 +144,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-11.7';
+const APP_VERSION = '2026-09-11.8';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -243,7 +243,8 @@ const FOODS = {
 
   /* intra fuels — v per unit via nominal 100 g unit (label values, per item) */
   sis_gel:        {l:'SiS isotonic gel',     e:'💧', v:[87,0,0,22], u:{n:'SiS isotonic gel',p:'SiS isotonic gels',g:100,step:0.5,max:3}},
-  fruit_pouch:    {l:'fruit pouch',          e:'🧃', v:[45,0.3,0.1,10.5], u:{n:'fruit pouch',p:'fruit pouches',g:100,step:0.5,max:4}},
+  /* pinned to Wattie's for Baby Apple, Peach & Mango 120g pouch label — Sandy's brand */
+  fruit_pouch:    {l:"fruit pouch (Wattie's Apple, Peach & Mango)", e:'🧃', v:[70.5,0.4,0.1,15.7], u:{n:'fruit pouch',p:'fruit pouches',g:100,step:0.5,max:4}},
   sports_drink:   {l:'sports drink',         e:'🥤', v:[31.2,0,0,7.6], ml:true, max:600},
 
   /* base-only foods (never offered as swaps) */
