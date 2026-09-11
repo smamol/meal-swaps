@@ -121,7 +121,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-08-29.2';
+const APP_VERSION = '2026-09-11.1';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -187,14 +187,26 @@ const FOODS = {
   strawberries:   {l:'strawberries',         e:'🍓', v:[28.7,0.64,0.37,4.8], max:250},
   raspberries:    {l:'raspberries',          e:'🍓', v:[45.2,1.17,0.95,5.8], max:250},
 
-  dark_choc:      {l:'dark chocolate',       e:'🍫', v:[528.2,3.9,30.3,62.6], max:50},
+  /* pinned to Whittaker's 92% Cocoa Ghana Intense Dark label (2530 kJ/100g), not
+     generic AFCD dark chocolate — Sandy's brand, per her Sep 2026 base-plan swap */
+  dark_choc:      {l:'dark chocolate (Whittaker’s 92%)', e:'🍫', v:[604.7,13.1,47.0,14.2], max:50},
   rice_bubbles:   {l:'Rice Bubbles',         e:'🥣', v:[370.2,6.8,1.1,81.2], max:60},
   granola:        {l:'granola',              e:'🥣', v:[425.4,8.81,14.4,60.0], max:60},
   muesli:         {l:'muesli',               e:'🥣', v:[393.4,10.8,10.8,59.2], max:60},
   weetbix:        {l:'Weet-Bix',             e:'🌾', v:[329.8,12.5,2.3,58.4], u:{n:'Weet-Bix',p:'Weet-Bix',g:15,max:4}},
 
+  cheese:         {l:'cheese',               e:'🧀', v:[413.5,24.6,35.6,0.0], max:100},
+  /* generic chutney, no NZ/AFCD row — pinned to Barker's Sundried Tomato & Olive
+     Chutney label (581 kJ/100g) per FSANZ-RULE.md's label fallback */
+  chutney:        {l:'chutney',              e:'🥫', v:[138.9,2.1,2.1,28.8], max:60},
+
   /* whole-snack alternative — per 100g DRY mix (serving = 42g; milk listed separately) */
   swolecake:      {l:'SwoleCakes pancake mix', e:'🥞', v:[365.7,28.4,5.1,49.8], max:120},
+  /* whole-serving alternative — pinned to the 425ml Rokeby Dutch Chocolate Protein
+     Smoothie bottle label; v is per-100ml so the fixed 1-bottle unit gives the
+     label's 287 cal/30g P/6.4g F/27.2g C */
+  rokeby_smoothie:{l:'Rokeby protein smoothie (Dutch Chocolate)', e:'🥤', v:[67.5,7.06,1.51,6.4],
+    u:{n:'Rokeby protein smoothie',g:425,step:1,min:1,max:1}},
 
   /* intra fuels — v per unit via nominal 100 g unit (label values, per item) */
   sis_gel:        {l:'SiS isotonic gel',     e:'💧', v:[87,0,0,22], u:{n:'SiS isotonic gel',p:'SiS isotonic gels',g:100,step:0.5,max:3}},
@@ -317,141 +329,80 @@ function mealSwapAlts(meal){
   });
 }
 
-/* ---------- meals — Livi's plan, as written ---------- */
+/* ---------- meals — Sep 2026 base plan (2 days), as written ---------- */
 const M = {
-  preBanana:{type:'pre', title:'Pre-Training', ing:[
+  preCrumpet2:{type:'pre', title:'Pre-Training', ing:[
+    {k:'crumpet', u:2, pool:'bread'}, {k:'honey', g:20, pool:'sweet'}]},
+
+  postBanana:{type:'snack', title:'Post-Training', ing:[
     {k:'banana', u:1, pool:'fruit'}]},
-  preCrumpet:{type:'pre', title:'Pre-Training', ing:[
-    {k:'crumpet', u:1, pool:'bread'}, {k:'honey', g:10, pool:'sweet'}]},
-  prePlus:{type:'pre', title:'Pre-Training +', ing:[
-    {k:'bagel', u:1, pool:'bread'}, {k:'honey', g:20, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}]},
-  b436:{type:'breakfast', title:'Breakfast', folded:true, ing:[
-    {k:'oats', g:60}, {k:'flaxseed', g:10}, {k:'whey', g:30, t:'30g whey'},
-    {k:'almond_milk', ml:150}, {k:'blueberries', g:60}]},
-  b490:{type:'breakfast', title:'Breakfast', folded:true, ing:[
-    {k:'oats', g:75}, {k:'flaxseed', g:10}, {k:'whey', g:30, t:'30g whey'},
-    {k:'almond_milk', ml:150}, {k:'blueberries', g:60}]},
+  postBagel:{type:'snack', title:'Post-Training', ing:[
+    {k:'bagel', u:1, pool:'bread'}, {k:'jam', g:10, pool:'sweet'}, {k:'peanut_butter', g:10, pool:'fats'}]},
+
   intra:{type:'intra', title:'Intra-Workout', ing:[
     {k:'sis_gel', u:1, pool:'intra'}]},
-  intraBig:{type:'intra', title:'Intra-Workout', ing:[
-    {k:'fruit_pouch', u:1, pool:'intra'}, {k:'sis_gel', u:1, pool:'intra'},
-    /* no pool: neither pouches nor gels land within 10% of 19g C */
-    {k:'sports_drink', ml:250}]},
-  postRefuel:{type:'snack', title:'Post-Training Refuel', ing:[
-    {k:'bagel', u:1, pool:'bread'}, {k:'honey', g:20, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}]},
 
-  L1:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:135, pool:'protein', generic:true},
-    {k:'rice_cooked', g:110, pool:'starch', generic:true},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:30, pool:'fetaFree'}]},
-  L2:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:125, pool:'protein', generic:true},
-    {k:'rice_cooked', g:130, pool:'starch', generic:true},
+  breakfast:{type:'breakfast', title:'Breakfast', folded:true, ing:[
+    {k:'oats', g:75}, {k:'flaxseed', g:10}, {k:'whey', g:30, t:'30g whey'},
+    {k:'almond_milk', ml:150}, {k:'blueberries', g:60}],
+    /* footnoted alternatives from the Sep 2026 plan — tuned to hold the
+       flat 10% calorie rule (287 cal Rokeby alone undershoots by 18%, so
+       2 bananas top it up; 20g cheese alone leaves the bagel+chutney combo
+       25%+ short, so cheese is scaled to 50g to close the gap) */
+    mealSwaps:[
+      {e:'🥤', parts:[{k:'rokeby_smoothie', u:1}, {k:'banana', u:2}]},
+      {e:'🥯', parts:[{k:'bagel', u:1}, {k:'cheese', g:50}, {k:'chutney', g:20}]}
+    ]},
+
+  morningSnack:{type:'snack', title:'Morning Snack', ing:[
+    {k:'rice_cake', u:3, pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
+    {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
+
+  lunch:{type:'lunch', title:'Lunch', ing:[
+    {k:'chicken_raw', g:100, pool:'protein', generic:true},
+    {k:'rice_cooked', g:150, pool:'starch', generic:true},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:15, pool:'fetaFree'}]},
-  L3:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:105, pool:'protein', generic:true},
-    {k:'rice_cooked', g:130, pool:'starch', generic:true},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:15, pool:'fetaFree'}]},
 
-  D1:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:125, pool:'protein', generic:true},
-    {k:'kumara_cooked', g:275, pool:'starch', generic:true},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:30, pool:'fetaFree'}]},
-  D2:{type:'dinner', title:'Dinner', ing:[
+  afternoonSnack:{type:'snack', title:'Afternoon Snack', ing:[
+    {k:'bagel', u:1, t:"1 bagel (or 2x crumpets)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
+    {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
+    mealSwaps:[
+      {e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:20}]},
+      {e:'🧀', parts:[{k:'bagel', u:1}, {k:'banana', u:1}, {k:'cheese', g:20}, {k:'chutney', g:10}]}
+    ]},
+
+  dinnerMod:{type:'dinner', title:'Dinner', ing:[
     {k:'chicken_raw', g:95, pool:'protein', generic:true},
     {k:'pasta_cooked', g:200, pool:'starch', generic:true},
     {k:'canned_tomato', g:200, t:'200g canned tomatoes'},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:30, pool:'fetaFree'}]},
-  D3:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:120, pool:'protein', generic:true},
-    {k:'pasta_cooked', g:145, pool:'starch', generic:true},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:15, pool:'fetaFree'}]},
-
-  Sa_m:{type:'snack', title:'Morning Snack', ing:[
-    {k:'rice_cake', u:2, pool:'bread'}, {k:'peanut_butter', g:30, pool:'fats'},
-    {k:'jam', g:5, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
-  Sb_a:{type:'snack', title:'Afternoon Snack', ing:[
-    {k:'rice_cake', u:2, pool:'bread'}, {k:'peanut_butter', g:30, pool:'fats'},
-    {k:'jam', g:5, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
-  Sc_m:{type:'snack', title:'Morning Snack', ing:[
-    {k:'rice_cake', u:3, pool:'bread'}, {k:'peanut_butter', g:30, pool:'fats'},
-    {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
-  Sd_m:{type:'snack', title:'Morning Snack', ing:[
-    {k:'rice_cake', u:3, pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
-    {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
-  Se_a:{type:'snack', title:'Afternoon Snack', ing:[
-    {k:'bagel', u:1, t:"1 bagel (Rebel/Abe's)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
-    {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:20}]}]},
-
-  des1:{type:'dessert', title:'Evening Snack', ing:[
-    {k:'yoghurt', g:160}, {k:'blueberries', g:60, pool:'fruit'},
-    {k:'kiwifruit', u:1, pool:'fruit'}, {k:'dark_choc', g:30, pool:'treat'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
-  /* --- heavy-day meals (added Aug 2026, see hyrox/Daily_Nutrition_Targets.md) --- */
-  intraXL:{type:'intra', title:'Intra-Workout XL', ing:[
-    {k:'fruit_pouch', u:1, pool:'intra'}, {k:'sis_gel', u:2, pool:'intra'},
-    /* no pool: neither pouches nor gels land within 10% of 38g C */
-    {k:'sports_drink', ml:500}]},
-  L4:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:105, pool:'protein', generic:true},
-    {k:'rice_cooked', g:130, pool:'starch', generic:true},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:35, pool:'fetaFree'}]},
-  D4:{type:'dinner', title:'Dinner', ing:[
+  dinnerHigh:{type:'dinner', title:'Dinner', ing:[
     {k:'chicken_raw', g:95, pool:'protein', generic:true},
-    {k:'pasta_cooked', g:280, pool:'starch', generic:true},
+    {k:'pasta_cooked', g:200, pool:'starch', generic:true},
     {k:'canned_tomato', g:200, t:'200g canned tomatoes'},
     {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:30, pool:'fetaFree'}]},
-  des3:{type:'dessert', title:'Evening Snack', ing:[
-    {k:'yoghurt', g:160}, {k:'rice_bubbles', g:40, pool:'cereal'},
-    {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
-    {k:'dark_choc', g:25, pool:'treat'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:30}]}]},
+    {k:'feta', g:20, pool:'fetaFree'}]},
 
-  des2:{type:'dessert', title:'Evening Snack', ing:[
+  dessert:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20, pool:'cereal'},
     {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
-    {k:'dark_choc', g:15, pool:'treat'}],
-    mealSwaps:[{e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}]}]},
+    {k:'dark_choc', g:15, pool:'treat'}]},
 };
 
 /* ---------- days ----------
-   Named by training load (Aug 2026). The plans were renamed because the old
-   names ran a tier behind the actual week: "Double training day PLUS" is a
-   light day at current volume and "Big day" is an ordinary Wednesday.
-   `was` keeps the old name visible on the tab. See hyrox/Daily_Nutrition_Targets.md */
+   Replaced Sep 2026: Sandy's new base plan has exactly 2 day-types (down from
+   the Aug 2026 Rest/Light/Moderate/Heavy rotation + 3 archived plans, all
+   removed). Source: Google Sheet "new base plan" \u2014 Mod training day / High
+   training day (>75 min and/or high intensity). */
 const DAYS = [
-  {name:"Rest day", was:'was \u201CLight training session\u201D',
-   hint:"no session \u2014 Sunday",
-   meals:[M.preBanana,M.b436,M.Sa_m,M.L1,M.Sb_a,M.D1,M.des1]},
-  {name:"Light day", was:'was \u201CDouble training day PLUS\u201D',
-   hint:"gym only, up to 75 min \u2014 Tuesday",
-   meals:[M.preCrumpet,M.b490,M.Sc_m,M.L1,M.prePlus,M.intra,M.D2,M.des2]},
-  {name:"Moderate day", was:'was \u201CBig day\u201D',
-   hint:"60\u2013100 min quality \u2014 Wednesday, Friday",
-   meals:[M.preCrumpet,M.intraBig,M.b490,M.postRefuel,M.Sc_m,M.L1,M.Se_a,M.D2,M.des2]},
-  {name:"Heavy day", was:'new \u2014 Aug 2026',
-   hint:"2.5 hrs+, or split AM/PM \u2014 Monday, Thursday, Saturday",
-   meals:[M.preCrumpet,M.b490,M.Sc_m,M.L4,M.prePlus,M.intraXL,M.postRefuel,M.D4,M.des3]},
-
-  /* Not in the current rotation \u2014 kept for reference. All three land in a
-     2,400\u20132,570 band that matches no day in the week, and two sit under the
-     65 g fat floor (1 g/kg). */
-  {name:"Mod training session", was:'not in rotation', hint:"single + intra", archived:true,
-   meals:[M.preCrumpet,M.intra,M.b436,M.Sd_m,M.L2,M.Se_a,M.D3,M.des2]},
-  {name:"Mod training session PLUS", was:'not in rotation', hint:"single + intra, bigger", archived:true,
-   meals:[M.preCrumpet,M.intra,M.b436,M.Sc_m,M.L1,M.Se_a,M.D3,M.des2]},
-  {name:"Double training day", was:'not in rotation', hint:"two sessions", archived:true,
-   meals:[M.preBanana,M.b490,M.Sd_m,M.L3,M.prePlus,M.intra,M.D2,M.des2]},
+  {name:"Mod training day", was:'new base plan \u2014 Sep 2026',
+   hint:"moderate training session",
+   meals:[M.preCrumpet2,M.postBanana,M.breakfast,M.morningSnack,M.lunch,M.afternoonSnack,M.dinnerMod,M.dessert]},
+  {name:"High training day", was:'new base plan \u2014 Sep 2026',
+   hint:">75 min and/or high intensity",
+   meals:[M.preCrumpet2,M.intra,M.postBagel,M.breakfast,M.morningSnack,M.lunch,M.afternoonSnack,M.dinnerHigh,M.dessert]},
 ];
 
 /* ---------- presentation ---------- */
@@ -520,15 +471,18 @@ function render(day){
     const mm = mealMacros(meal);
     if (meal.folded){
       const fSwaps = meal.ing.filter(i=>i.pool).map(ing=>({ing, swaps:computeSwaps(ing)})).filter(x=>x.swaps.length);
-      const badge = fSwaps.length ? `<span class="badge">${fSwaps.length} swappable</span>`
-                                  : `<span class="badge none">as planned</span>`;
-      const swapHtml = fSwaps.length ? `<div class="fold-swaps">${fSwaps.map(({ing, swaps})=>
+      const mAlts = mealSwapAlts(meal);
+      const hasSwaps = fSwaps.length > 0 || mAlts.length > 0;
+      const badge = hasSwaps ? `<span class="badge">${fSwaps.length + (mAlts.length ? 1 : 0)} swappable</span>`
+                              : `<span class="badge none">as planned</span>`;
+      const ingSwapHtml = fSwaps.map(({ing, swaps})=>
           `<div class="swaps-label">Swap for — ${BASIS_NAME[POOLS[ing.pool].b]} — instead of ${ingLabel(ing)}</div>${
           swaps.map(sw=>`<div class="swap"><div class="swap-em">${sw.e}</div><div class="swap-txt">
             <div class="swap-name">${sw.label}</div>
-            <div class="swap-d">${deltaLine(sw, POOLS[ing.pool].b)}</div></div></div>`).join('')}`).join('')
-        }</div>` : '';
-      return `<div class="meal ${fSwaps.length?'swappable':''}">
+            <div class="swap-d">${deltaLine(sw, POOLS[ing.pool].b)}</div></div></div>`).join('')}`).join('');
+      const mealSwapHtml = mAlts.length ? `<div class="swaps-label">Swap the whole meal — ${BASIS_NAME[0]}</div>${swapRows(mAlts, 0)}` : '';
+      const swapHtml = hasSwaps ? `<div class="fold-swaps">${ingSwapHtml}${mealSwapHtml}</div>` : '';
+      return `<div class="meal ${hasSwaps?'swappable':''}">
         <div class="meal-head">
           <div class="icon" style="background:${s.bg};color:${s.fg}">${s.em}</div>
           <div class="meal-body">
@@ -536,7 +490,7 @@ function render(day){
             <div class="items">${meal.ing.map(ingLabel).join(' + ')}</div>
             <div class="macros">${macroLine(mm)}</div>
           </div>
-          ${fSwaps.length?'<div class="chev">▼</div>':''}
+          ${hasSwaps?'<div class="chev">▼</div>':''}
         </div>${swapHtml}</div>`;
     }
     const rows = meal.ing.map((ing, ii)=>{
