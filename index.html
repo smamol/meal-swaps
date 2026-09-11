@@ -121,7 +121,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-11.4';
+const APP_VERSION = '2026-09-11.5';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -193,7 +193,8 @@ const FOODS = {
   /* pinned to Whittaker's 92% Cocoa Ghana Intense Dark label (2530 kJ/100g), not
      generic AFCD dark chocolate — Sandy's brand, per her Sep 2026 base-plan swap */
   dark_choc:      {l:'dark chocolate (Whittaker’s 92%)', e:'🍫', v:[604.7,13.1,47.0,14.2], max:50},
-  rice_bubbles:   {l:'Rice Bubbles',         e:'🥣', v:[370.2,6.8,1.1,81.2], max:60},
+  /* pinned to Sanitarium Ricies — Sandy's brand (NZ's actual product name) */
+  rice_bubbles:   {l:'Ricies (Sanitarium)',  e:'🥣', v:[380,6.3,0.5,85.4], max:60},
   granola:        {l:'granola',              e:'🥣', v:[425.4,8.81,14.4,60.0], max:60},
   muesli:         {l:'muesli',               e:'🥣', v:[393.4,10.8,10.8,59.2], max:60},
   weetbix:        {l:'Weet-Bix',             e:'🌾', v:[329.8,12.5,2.3,58.4], u:{n:'Weet-Bix',p:'Weet-Bix',g:15,max:4}},
@@ -227,6 +228,15 @@ const FOODS = {
   yoghurt:        {l:'Greek yoghurt',        e:'🥛', v:[74,9.5,2.8,2.7]},
   salad:          {l:'salad',                e:'🥗', v:[21.3,1.94,0.31,1.8]},
   canned_tomato:  {l:'canned tomatoes',      e:'🍅', v:[18.6,1.13,0.1,2.54]},
+  /* veg alternatives to canned tomatoes, all boiled/steamed except bok choy
+     (NZ database has no cooked bok choy entry, raw used instead) — Sandy's
+     request 2026-09. greens/spinach keys and values match the same NZ-pinned
+     entries Anna's app already uses */
+  greens:         {l:'broccoli',              e:'🥦', v:[30.4,3.03,0.5,1.75], max:400},
+  spinach:        {l:'spinach',               e:'🥬', v:[19.4,2.81,0.4,0.0], max:400},
+  courgette:      {l:'courgette',             e:'🥒', v:[16.0,2.1,0.2,0.7], max:400},
+  bok_choy:       {l:'bok choy',              e:'🥬', v:[20.1,1.9,0.2,1.7], max:400},
+  brussels_sprout:{l:'brussels sprouts',      e:'🥦', v:[45.4,3.2,0.5,5.2], max:400},
   oats:           {l:'oats',                 e:'🥣', v:[360.9,12.2,7.24,56.7]},
   flaxseed:       {l:'flaxseed',             e:'🌱', v:[451.7,18.4,37.0,0.7]},
   /* pinned to Go Good Whey Protein Isolate, Unflavoured — Sandy's brand */
@@ -245,13 +255,21 @@ const POOLS = {
   protein: {b:1, keys:['chicken_raw','fish_raw','beef_raw','pork_raw','prawns_cooked','tuna_water','egg','lentils_cooked']},
   starch:  {b:3, keys:['rice_cooked','pasta_cooked','couscous','kumara_cooked','potato_cooked']},
   bread:   {b:3, keys:['bagel','crumpet','english_muffin','vogels','fruit_bread','rice_cake','corn_thin','wrap']},
-  fats:    {b:2, keys:['peanut_butter','almond_butter','almonds','pumpkin_seeds','sunflower_seeds','mixed_seeds','avocado']},
+  /* sunflower seeds, pumpkin seeds and LSA (mixed_seeds — Linseed/Sunflower/
+     Almond) dropped 2026-09: Sandy's peanut butter is a rice-cake/cracker
+     spread, and loose seeds don't work there ("just doesn't taste good") */
+  fats:    {b:2, keys:['peanut_butter','almond_butter','almonds','avocado']},
   sweet:   {b:3, keys:['honey','jam']},
   fruit:   {b:3, keys:['banana','apple','kiwifruit','orange','pear','mandarin','blueberries','strawberries','raspberries']},
   cereal:  {b:3, keys:['rice_bubbles','granola','muesli','weetbix']},
   treat:   {b:2, keys:['dark_choc','almonds','almond_butter','peanut_butter']},
   fetaFree:{b:2, keys:['avocado','egg','pumpkin_seeds','sunflower_seeds','mixed_seeds','hummus']},
   intra:   {b:3, keys:['sis_gel','fruit_pouch','sports_drink']},
+  /* basis 0 (calories): these veg are too low and mismatched on P/F/C to
+     macro-match sensibly — courgette/spinach/broccoli read protein-dominant
+     boiled, brussels sprouts/tomatoes carb-dominant, so calorie parity is
+     the only basis that makes portions come out sane across all of them */
+  veg:     {b:0, keys:['canned_tomato','greens','spinach','courgette','bok_choy','brussels_sprout']},
 };
 
 /* ---------- swap maths (shared with evals.js — keep pure) ---------- */
@@ -393,19 +411,19 @@ const M = {
 
   dinnerMod:{type:'dinner', title:'Dinner', ing:[
     {k:'chicken_raw', g:95, pool:'protein', generic:true},
-    {k:'pasta_cooked', g:200, pool:'starch', generic:true},
-    {k:'canned_tomato', g:200, t:'200g canned tomatoes'},
+    {k:'pasta_cooked', g:200, pool:'starch'},
+    {k:'canned_tomato', g:200, t:'200g canned tomatoes', pool:'veg'},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:30, pool:'fetaFree'}]},
   dinnerHigh:{type:'dinner', title:'Dinner', ing:[
     {k:'chicken_raw', g:95, pool:'protein', generic:true},
-    {k:'pasta_cooked', g:200, pool:'starch', generic:true},
-    {k:'canned_tomato', g:200, t:'200g canned tomatoes'},
+    {k:'pasta_cooked', g:200, pool:'starch'},
+    {k:'canned_tomato', g:200, t:'200g canned tomatoes', pool:'veg'},
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:20, pool:'fetaFree'}]},
 
   dessert:{type:'dessert', title:'Evening Snack', ing:[
-    {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20, pool:'cereal'},
+    {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20},
     {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
     {k:'dark_choc', g:15, pool:'treat'}]},
 };
