@@ -121,7 +121,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-11.2';
+const APP_VERSION = '2026-09-11.3';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -343,7 +343,13 @@ const M = {
   postBanana:{type:'snack', title:'Post-Training', ing:[
     {k:'banana', u:1, pool:'fruit'}]},
   postBagel:{type:'snack', title:'Post-Training', ing:[
-    {k:'bagel', u:1, pool:'bread'}, {k:'jam', g:10, pool:'sweet'}, {k:'peanut_butter', g:10, pool:'fats'}]},
+    {k:'bagel', u:1, pool:'bread'}, {k:'jam', g:10, pool:'sweet'}, {k:'peanut_butter', g:10, pool:'fats'}],
+    /* Up&Go alone (212.5 cal) undershoots by 32%; +1 banana lands at +5%
+       and nearly doubles the meal's protein (10g → 19g) since the base is
+       protein-light — a better macro trade than the flat-carb bagel/jam/PB */
+    mealSwaps:[
+      {e:'🥛', parts:[{k:'upandgo_vanilla', u:1}, {k:'banana', u:1}]}
+    ]},
 
   intra:{type:'intra', title:'Intra-Workout', ing:[
     {k:'sis_gel', u:1, pool:'intra'}]},
@@ -354,13 +360,10 @@ const M = {
     /* footnoted alternatives from the Sep 2026 plan — tuned to hold the
        flat 10% calorie rule (287 cal Rokeby alone undershoots by 18%, so
        2 bananas top it up; 20g cheese alone leaves the bagel+chutney combo
-       25%+ short, so cheese is scaled to 50g to close the gap). Up&Go added
-       on Sandy's request — 212.5 cal alone undershoots by 56%, same 2-banana
-       top-up lands it at −9%, the widest margin of the three */
+       25%+ short, so cheese is scaled to 50g to close the gap) */
     mealSwaps:[
       {e:'🥤', parts:[{k:'rokeby_smoothie', u:1}, {k:'banana', u:2}]},
-      {e:'🥯', parts:[{k:'bagel', u:1}, {k:'cheese', g:50}, {k:'chutney', g:20}]},
-      {e:'🥛', parts:[{k:'upandgo_vanilla', u:1}, {k:'banana', u:2}]}
+      {e:'🥯', parts:[{k:'bagel', u:1}, {k:'cheese', g:50}, {k:'chutney', g:20}]}
     ]},
 
   morningSnack:{type:'snack', title:'Morning Snack', ing:[
