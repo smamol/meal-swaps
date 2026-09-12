@@ -144,7 +144,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-11.8';
+const APP_VERSION = '2026-09-12.1';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -182,7 +182,6 @@ const FOODS = {
   /* pinned to Abe's "The Natural" (plain) bagel, 90g each — Sandy's brand */
   bagel:          {l:"bagel (Abe's, plain)", e:'🥯', v:[277,9.59,1.35,55.7], u:{n:"Abe's bagel",p:"Abe's bagels",g:90}},
   crumpet:        {l:'crumpet',              e:'🥞', v:[178.3,6.56,1.0,34.0], u:{n:'crumpet',g:50}},
-  english_muffin: {l:'English muffin',       e:'🫓', v:[217.0,8.78,2.15,38.4], u:{n:'English muffin',g:65}},
   vogels:         {l:"slice Vogel's",        e:'🍞', v:[267.7,10.8,8.48,33.4], u:{n:"slice Vogel's",p:"slices Vogel's",g:40}},
   fruit_bread:    {l:'slice fruit toast',    e:'🍇', v:[265.8,8.8,3.7,47.3], u:{n:'slice fruit toast',p:'slices fruit toast',g:40}},
   /* pinned to Ceres Organics Brown Rice Cakes, Original — Sandy's brand */
@@ -241,6 +240,14 @@ const FOODS = {
   upandgo_vanilla:{l:'Up&Go Protein Energize (Vanilla)', e:'🥛', v:[85,7.1,1.8,9.6],
     u:{n:'Up&Go Protein Energize (250ml bottle)',g:250,step:1,min:1,max:2}},
 
+  /* whole-snack alternative — Sandy's home-baked blueberry protein slice, derived
+     over the finished 872 g tray she weighed: 100g raw egg (NZ G1016) + 30g Go Good
+     whey isolate + 4g vanilla extract (AFCD F009350) + 125ml almond milk (NZ C1127)
+     + 180g rolled oats (NZ E1075) + 40g chia seed (NZ Q1026) + 200g blueberries
+     (NZ L1050) + 100g 72% dark chocolate (NZ W1026), no added sweetener.
+     Tray totals 1768 cal / 82g P / 78g F / 158g C; v is that ÷ 8.72 */
+  blueberry_slice:{l:'blueberry protein slice', e:'🫐', v:[202.7,9.35,8.93,18.11], max:250},
+
   /* intra fuels — v per unit via nominal 100 g unit (label values, per item) */
   sis_gel:        {l:'SiS isotonic gel',     e:'💧', v:[87,0,0,22], u:{n:'SiS isotonic gel',p:'SiS isotonic gels',g:100,step:0.5,max:3}},
   /* pinned to Wattie's for Baby Apple, Peach & Mango 120g pouch label — Sandy's brand */
@@ -278,7 +285,9 @@ const FOODS = {
 const POOLS = {
   protein: {b:1, keys:['chicken_raw','fish_raw','beef_raw','pork_raw','prawns_cooked','tuna_water','egg','lentils_cooked']},
   starch:  {b:3, keys:['rice_cooked','pasta_cooked','couscous','kumara_cooked','potato_cooked']},
-  bread:   {b:3, keys:['bagel','crumpet','english_muffin','vogels','fruit_bread','rice_cake','corn_thin','wrap']},
+  /* English muffin dropped 2026-09-12 — Sandy doesn't like them ("remove them
+     from my list"), so it leaves every bread swap, not just the slice ones */
+  bread:   {b:3, keys:['bagel','crumpet','vogels','fruit_bread','rice_cake','corn_thin','wrap']},
   /* sunflower seeds, pumpkin seeds and LSA (mixed_seeds — Linseed/Sunflower/
      Almond) dropped 2026-09: Sandy's peanut butter is a rice-cake/cracker
      spread, and loose seeds don't work there ("just doesn't taste good") */
@@ -417,7 +426,13 @@ const M = {
 
   morningSnack:{type:'snack', title:'Morning Snack', ing:[
     {k:'rice_cake', u:3, pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
-    {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}]},
+    {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}],
+    /* blueberry slice, added 2026-09-12 — the slice is protein- and fat-dense,
+       so a small piece plus fruit holds all four macros where a bigger piece
+       alone would trade the snack's carbs for fat */
+    mealSwaps:[
+      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'banana', u:1.5}]}
+    ]},
 
   lunch:{type:'lunch', title:'Lunch', ing:[
     {k:'chicken_raw', g:100, pool:'protein', generic:true},
@@ -430,7 +445,9 @@ const M = {
     {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
     mealSwaps:[
       {e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:20}]},
-      {e:'🧀', parts:[{k:'bagel', u:1}, {k:'banana', u:1}, {k:'cheese', g:20}, {k:'chutney', g:10}]}
+      {e:'🧀', parts:[{k:'bagel', u:1}, {k:'banana', u:1}, {k:'cheese', g:20}, {k:'chutney', g:10}]},
+      {e:'🫐', parts:[{k:'blueberry_slice', g:45}, {k:'bagel', u:1}, {k:'banana', u:1}]},
+      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'bagel', u:1}, {k:'jam', g:35}]}
     ]},
 
   dinnerMod:{type:'dinner', title:'Dinner', ing:[
@@ -449,7 +466,14 @@ const M = {
   dessert:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20},
     {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
-    {k:'dark_choc', g:15, pool:'treat'}]},
+    {k:'dark_choc', g:15, pool:'treat'}],
+    /* blueberry slice, added 2026-09-12 — both keep the yoghurt, which is the
+       only thing that carries this card's 19g protein; the slice stands in for
+       the Ricies and dark chocolate */
+    mealSwaps:[
+      {e:'🫐', parts:[{k:'blueberry_slice', g:100}, {k:'yoghurt', g:100}, {k:'blueberries', g:80}, {k:'rice_bubbles', g:10}]},
+      {e:'🫐', parts:[{k:'blueberry_slice', g:95}, {k:'yoghurt', g:100}, {k:'kiwifruit', u:1}, {k:'blueberries', g:100}]}
+    ]},
 };
 
 /* ---------- days ----------
