@@ -144,7 +144,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-13.1';
+const APP_VERSION = '2026-09-13.2';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -225,6 +225,12 @@ const FOODS = {
   /* generic chutney, no NZ/AFCD row — pinned to Barker's Sundried Tomato & Olive
      Chutney label (581 kJ/100g) per FSANZ-RULE.md's label fallback */
   chutney:        {l:'chutney',              e:'🥫', v:[138.9,2.1,2.1,28.8], max:60},
+  /* whole-snack alternatives to the PB + jam on both snacks — Livi's Rest day
+     footnote ("cheese & tomato / cottage cheese + honey"), added 2026-09-13 at
+     Sandy's request for every day. Cottage cheese is the standard full-fat row
+     (NZ F11), not the 1% light one — "normal full-fat cottage cheese" */
+  tomato:         {l:'tomato',               e:'🍅', v:[14.8,0.38,0.16,2.27], max:200},
+  cottage_cheese: {l:'cottage cheese (full-fat)', e:'🧀', v:[94.6,13.7,3.5,2.0], max:150},
 
   /* whole-snack alternative — per 100g DRY mix (serving = 42g; milk listed separately) */
   swolecake:      {l:'SwoleCakes pancake mix', e:'🥞', v:[365.7,28.4,5.1,49.8], max:120},
@@ -431,7 +437,13 @@ const M = {
        so a small piece plus fruit holds all four macros where a bigger piece
        alone would trade the snack's carbs for fat */
     mealSwaps:[
-      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'banana', u:1.5}]}
+      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'banana', u:1.5}]},
+      /* PB + jam → cheese & tomato / cottage cheese + honey (Livi's footnote),
+         searched over portions: 20g cheese + 125g tomato holds cal within 14
+         and P/F within 3g (carbs −5g, the jam); 50g cottage + 10g honey holds
+         carbs exactly and trades 3g fat for 4g protein */
+      {e:'🧀', parts:[{k:'rice_cake', u:3}, {k:'cheese', g:20}, {k:'tomato', g:125}, {k:'apple', u:1}]},
+      {e:'🍯', parts:[{k:'rice_cake', u:3}, {k:'cottage_cheese', g:50}, {k:'honey', g:10}, {k:'apple', u:1}]}
     ]},
 
   lunch:{type:'lunch', title:'Lunch', ing:[
@@ -455,7 +467,10 @@ const M = {
       {e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:20}]},
       {e:'🧀', parts:[{k:'bagel', u:1}, {k:'banana', u:1}, {k:'cheese', g:20}, {k:'chutney', g:10}]},
       {e:'🫐', parts:[{k:'blueberry_slice', g:45}, {k:'bagel', u:1}, {k:'banana', u:1}]},
-      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'bagel', u:1}, {k:'jam', g:35}]}
+      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'bagel', u:1}, {k:'jam', g:35}]},
+      /* same PB + jam alternatives as the morning snack — see there */
+      {e:'🍅', parts:[{k:'bagel', u:1}, {k:'cheese', g:20}, {k:'tomato', g:125}, {k:'banana', u:1}]},
+      {e:'🍯', parts:[{k:'bagel', u:1}, {k:'cottage_cheese', g:50}, {k:'honey', g:10}, {k:'banana', u:1}]}
     ]},
 
   dinnerMod:{type:'dinner', title:'Dinner', ing:[
