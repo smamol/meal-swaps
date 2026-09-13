@@ -144,7 +144,7 @@
 
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-09-12.1';
+const APP_VERSION = '2026-09-13.1';
 
 /* ---------- food library ----------
    v = [kcal, protein g, fat g, available carb g] per 100 g, straight from the
@@ -393,7 +393,7 @@ function mealSwapAlts(meal){
   });
 }
 
-/* ---------- meals — Sep 2026 base plan (2 days), as written ---------- */
+/* ---------- meals — Sep 2026 base plan (3 days), as written ---------- */
 const M = {
   preCrumpet2:{type:'pre', title:'Pre-Training', ing:[
     {k:'crumpet', u:2, pool:'bread'}, {k:'honey', g:20, pool:'sweet'}]},
@@ -440,6 +440,14 @@ const M = {
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:15, pool:'fetaFree'}]},
 
+  /* Rest day lunch — Livi's sheet, added 2026-09-13: 120g meat / 150g rice /
+     2 cups salad / 20g feta (sheet: 446 cal, 35P, 13F, 46C) */
+  lunchRest:{type:'lunch', title:'Lunch', ing:[
+    {k:'chicken_raw', g:120, pool:'protein', generic:true},
+    {k:'rice_cooked', g:150, pool:'starch', generic:true},
+    {k:'salad', g:140, t:'2 cups salad'},
+    {k:'feta', g:20, pool:'fetaFree'}]},
+
   afternoonSnack:{type:'snack', title:'Afternoon Snack', ing:[
     {k:'bagel', u:1, t:"1 Abe's bagel (or 2x crumpets)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
     {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
@@ -463,6 +471,15 @@ const M = {
     {k:'salad', g:140, t:'2 cups salad'},
     {k:'feta', g:20, pool:'fetaFree'}]},
 
+  /* Rest day dinner — Livi's sheet, added 2026-09-13: 120g meat / 200g pasta /
+     200g canned tomatoes / 2 cups salad / 30g feta (sheet: 555 cal, 44P, 12F, 61C) */
+  dinnerRest:{type:'dinner', title:'Dinner', ing:[
+    {k:'chicken_raw', g:120, pool:'protein', generic:true},
+    {k:'pasta_cooked', g:200, pool:'starch'},
+    {k:'canned_tomato', g:200, t:'200g canned tomatoes', pool:'veg'},
+    {k:'salad', g:140, t:'2 cups salad'},
+    {k:'feta', g:30, pool:'fetaFree'}]},
+
   dessert:{type:'dessert', title:'Evening Snack', ing:[
     {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20},
     {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
@@ -477,10 +494,11 @@ const M = {
 };
 
 /* ---------- days ----------
-   Replaced Sep 2026: Sandy's new base plan has exactly 2 day-types (down from
-   the Aug 2026 Rest/Light/Moderate/Heavy rotation + 3 archived plans, all
+   Replaced Sep 2026: Sandy's new base plan has 3 day-types (down from the
+   Aug 2026 Rest/Light/Moderate/Heavy rotation + 3 archived plans, all
    removed). Source: Google Sheet "new base plan" \u2014 Mod training day / High
-   training day (>75 min and/or high intensity). */
+   training day (>75 min and/or high intensity) / Rest day (Livi added it
+   2026-09-13: no pre, post or intra; sheet says 2440 cal, 145P, 62F, 305C). */
 const DAYS = [
   {name:"Mod training day", was:'new base plan \u2014 Sep 2026',
    hint:"moderate training session",
@@ -488,6 +506,9 @@ const DAYS = [
   {name:"High training day", was:'new base plan \u2014 Sep 2026',
    hint:">75 min and/or high intensity",
    meals:[M.preCrumpet2,M.intra,M.postBagel,M.breakfast,M.morningSnack,M.lunch,M.afternoonSnack,M.dinnerHigh,M.dessert]},
+  {name:"Rest day", was:'new base plan \u2014 Sep 2026',
+   hint:"no training",
+   meals:[M.breakfast,M.morningSnack,M.lunchRest,M.afternoonSnack,M.dinnerRest,M.dessert]},
 ];
 
 /* ---------- presentation ---------- */
