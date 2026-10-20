@@ -142,170 +142,25 @@
   <footer id="foot"></footer>
 </div>
 
-<!-- food library and swap maths live in their own files so evals.js and the plan
-     loaders run the same code the page does. ?v= must match APP_VERSION below. -->
-<script src="foods.js?v=2026-10-20.1"></script>
-<script src="engine.js?v=2026-10-20.1"></script>
+<!-- One page for every client (step 2, 2026-10-20). The shared library, swap
+     groups and swap maths live in their own files so evals.js runs the same code
+     the page does; plan.js is this site's person (deploy.js copies plans/<id>.js).
+     All are plain scripts, so the page works offline as before.
+     ?v= must match APP_VERSION below. -->
+<script src="foods.js?v=2026-10-20.2"></script>
+<script src="pools.js?v=2026-10-20.2"></script>
+<script src="engine.js?v=2026-10-20.2"></script>
+<script src="plan.js?v=2026-10-20.2"></script>
 <script>
 /* ---------- version (keep in sync with version.txt on deploy) ---------- */
-const APP_VERSION = '2026-10-20.1';
+const APP_VERSION = '2026-10-20.2';
 
-/* ---------- swap pools ----------
-   b = the macro a swap must hold: 1 protein, 2 fat, 3 carbs (index into v).
-   An ingredient's swaps are the other pool members, re-portioned to the same
-   amount of that macro; the other macros are shown as honest differences. */
-const POOLS = {
-  protein: {b:1, keys:['chicken_raw','fish_raw','salmon_raw','beef_raw','pork_raw','prawns_cooked','tuna_water','egg','lentils_cooked']},
-  starch:  {b:3, keys:['rice_cooked','pasta_cooked','couscous','kumara_cooked','potato_cooked']},
-  /* English muffin dropped 2026-09-12 — Sandy doesn't like them ("remove them
-     from my list"), so it leaves every bread swap, not just the slice ones */
-  bread:   {b:3, keys:['bagel','crumpet','vogels','fruit_bread','rice_cake','corn_thin','wrap']},
-  /* sunflower seeds, pumpkin seeds and LSA (mixed_seeds — Linseed/Sunflower/
-     Almond) dropped 2026-09: Sandy's peanut butter is a rice-cake/cracker
-     spread, and loose seeds don't work there ("just doesn't taste good") */
-  fats:    {b:2, keys:['peanut_butter','almond_butter','almonds','avocado']},
-  sweet:   {b:3, keys:['honey','jam']},
-  fruit:   {b:3, keys:['banana','apple','kiwifruit','orange','pear','mandarin','blueberries','strawberries','raspberries']},
-  cereal:  {b:3, keys:['rice_bubbles','granola','muesli','weetbix']},
-  treat:   {b:2, keys:['dark_choc','almonds','almond_butter','peanut_butter']},
-  fetaFree:{b:2, keys:['avocado','egg','pumpkin_seeds','sunflower_seeds','mixed_seeds','hummus']},
-  intra:   {b:3, keys:['sis_gel','fruit_pouch','sports_drink']},
-  /* basis 0 (calories): these veg are too low and mismatched on P/F/C to
-     macro-match sensibly — courgette/spinach/broccoli read protein-dominant
-     boiled, brussels sprouts/tomatoes carb-dominant, so calorie parity is
-     the only basis that makes portions come out sane across all of them */
-  veg:     {b:0, keys:['canned_tomato','greens','spinach','courgette','bok_choy','brussels_sprout']},
-};
-
-/* ---------- swap maths — engine.js, bound to this app's library and pools ---------- */
-const { ingAmountG, ingMacros, mealMacros, ingLabel, computeSwaps, mealSwapAlts } = createEngine(FOODS, POOLS);
-
-/* ---------- meals — Sep 2026 base plan (3 days), as written ---------- */
-const M = {
-  preCrumpet2:{type:'pre', title:'Pre-Training', ing:[
-    {k:'crumpet', u:2, pool:'bread'}, {k:'honey', g:20, pool:'sweet'}]},
-
-  postBanana:{type:'snack', title:'Post-Training', ing:[
-    {k:'banana', u:1, pool:'fruit'}]},
-  postBagel:{type:'snack', title:'Post-Training', ing:[
-    {k:'bagel', u:1, pool:'bread'}, {k:'jam', g:10, pool:'sweet'}, {k:'peanut_butter', g:10, pool:'fats'}],
-    /* Up&Go alone (212.5 cal) undershoots by 32%; +1 banana lands at +5%
-       and nearly doubles the meal's protein (10g → 19g) since the base is
-       protein-light — a better macro trade than the flat-carb bagel/jam/PB */
-    mealSwaps:[
-      {e:'🥛', parts:[{k:'upandgo_vanilla', u:1}, {k:'banana', u:1}]}
-    ]},
-
-  intra:{type:'intra', title:'Intra-Workout', ing:[
-    {k:'sis_gel', u:1, pool:'intra'}]},
-
-  breakfast:{type:'breakfast', title:'Breakfast', folded:true, ing:[
-    {k:'oats', g:75}, {k:'flaxseed', g:10}, {k:'whey_isolate', g:30},
-    {k:'almond_milk', ml:150}, {k:'blueberries', g:60}],
-    /* footnoted alternatives from the Sep 2026 plan — tuned to hold the
-       flat 10% calorie rule (287 cal Rokeby alone undershoots by 18%, so
-       2 bananas top it up; 20g cheese alone leaves the bagel+chutney combo
-       25%+ short, so cheese is scaled to 50g to close the gap) */
-    mealSwaps:[
-      {e:'🥤', parts:[{k:'rokeby_smoothie', u:1}, {k:'banana', u:2}]},
-      {e:'🥯', parts:[{k:'bagel', u:1}, {k:'cheese', g:50}, {k:'chutney', g:20}]}
-    ]},
-
-  morningSnack:{type:'snack', title:'Morning Snack', ing:[
-    {k:'rice_cake', u:3, pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
-    {k:'jam', g:10, pool:'sweet'}, {k:'apple', u:1, pool:'fruit'}],
-    /* blueberry slice, added 2026-09-12 — the slice is protein- and fat-dense,
-       so a small piece plus fruit holds all four macros where a bigger piece
-       alone would trade the snack's carbs for fat */
-    mealSwaps:[
-      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'banana', u:1.5}]},
-      /* PB + jam → cheese & tomato / cottage cheese + honey (Livi's footnote),
-         searched over portions: 20g cheese + 125g tomato holds cal within 14
-         and P/F within 3g (carbs −5g, the jam); 50g cottage + 10g honey holds
-         carbs exactly and trades 3g fat for 4g protein */
-      {e:'🧀', parts:[{k:'rice_cake', u:3}, {k:'cheese', g:20}, {k:'tomato', g:125}, {k:'apple', u:1}]},
-      {e:'🍯', parts:[{k:'rice_cake', u:3}, {k:'cottage_cheese', g:50}, {k:'honey', g:10}, {k:'apple', u:1}]}
-    ]},
-
-  lunch:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:100, pool:'protein', generic:true},
-    {k:'rice_cooked', g:150, pool:'starch', generic:true},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:15, pool:'fetaFree'}]},
-
-  /* Rest day lunch — Livi's sheet, added 2026-09-13: 120g meat / 150g rice /
-     2 cups salad / 20g feta (sheet: 446 cal, 35P, 13F, 46C) */
-  lunchRest:{type:'lunch', title:'Lunch', ing:[
-    {k:'chicken_raw', g:120, pool:'protein', generic:true},
-    {k:'rice_cooked', g:150, pool:'starch', generic:true},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:20, pool:'fetaFree'}]},
-
-  afternoonSnack:{type:'snack', title:'Afternoon Snack', ing:[
-    {k:'bagel', u:1, t:"1 Abe's bagel (or 2x crumpets)", pool:'bread'}, {k:'peanut_butter', g:10, pool:'fats'},
-    {k:'jam', g:10, pool:'sweet'}, {k:'banana', u:1, pool:'fruit'}],
-    mealSwaps:[
-      {e:'🥞', parts:[{k:'swolecake', g:63}, {k:'almond_milk', ml:75}, {k:'banana', u:1}, {k:'honey', g:20}]},
-      {e:'🧀', parts:[{k:'bagel', u:1}, {k:'banana', u:1}, {k:'cheese', g:20}, {k:'chutney', g:10}]},
-      {e:'🫐', parts:[{k:'blueberry_slice', g:45}, {k:'bagel', u:1}, {k:'banana', u:1}]},
-      {e:'🫐', parts:[{k:'blueberry_slice', g:50}, {k:'bagel', u:1}, {k:'jam', g:35}]},
-      /* same PB + jam alternatives as the morning snack — see there */
-      {e:'🍅', parts:[{k:'bagel', u:1}, {k:'cheese', g:20}, {k:'tomato', g:125}, {k:'banana', u:1}]},
-      {e:'🍯', parts:[{k:'bagel', u:1}, {k:'cottage_cheese', g:50}, {k:'honey', g:10}, {k:'banana', u:1}]}
-    ]},
-
-  dinnerMod:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:95, pool:'protein', generic:true},
-    {k:'pasta_cooked', g:200, pool:'starch'},
-    {k:'canned_tomato', g:200, t:'200g canned tomatoes', pool:'veg'},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:30, pool:'fetaFree'}]},
-  dinnerHigh:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:95, pool:'protein', generic:true},
-    {k:'pasta_cooked', g:200, pool:'starch'},
-    {k:'canned_tomato', g:200, t:'200g canned tomatoes', pool:'veg'},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:20, pool:'fetaFree'}]},
-
-  /* Rest day dinner — Livi's sheet, added 2026-09-13: 120g meat / 200g pasta /
-     200g canned tomatoes / 2 cups salad / 30g feta (sheet: 555 cal, 44P, 12F, 61C) */
-  dinnerRest:{type:'dinner', title:'Dinner', ing:[
-    {k:'chicken_raw', g:120, pool:'protein', generic:true},
-    {k:'pasta_cooked', g:200, pool:'starch'},
-    {k:'canned_tomato', g:200, t:'200g canned tomatoes', pool:'veg'},
-    {k:'salad', g:140, t:'2 cups salad'},
-    {k:'feta', g:30, pool:'fetaFree'}]},
-
-  dessert:{type:'dessert', title:'Evening Snack', ing:[
-    {k:'yoghurt', g:160}, {k:'rice_bubbles', g:20},
-    {k:'blueberries', g:60, pool:'fruit'}, {k:'kiwifruit', u:1, pool:'fruit'},
-    {k:'dark_choc', g:15, pool:'treat'}],
-    /* blueberry slice, added 2026-09-12 — both keep the yoghurt, which is the
-       only thing that carries this card's 19g protein; the slice stands in for
-       the Ricies and dark chocolate */
-    mealSwaps:[
-      {e:'🫐', parts:[{k:'blueberry_slice', g:100}, {k:'yoghurt', g:100}, {k:'blueberries', g:80}, {k:'rice_bubbles', g:10}]},
-      {e:'🫐', parts:[{k:'blueberry_slice', g:95}, {k:'yoghurt', g:100}, {k:'kiwifruit', u:1}, {k:'blueberries', g:100}]}
-    ]},
-};
-
-/* ---------- days ----------
-   Replaced Sep 2026: Sandy's new base plan has 3 day-types (down from the
-   Aug 2026 Rest/Light/Moderate/Heavy rotation + 3 archived plans, all
-   removed). Source: Google Sheet "new base plan" \u2014 Mod training day / High
-   training day (>75 min and/or high intensity) / Rest day (Livi added it
-   2026-09-13: no pre, post or intra; sheet says 2440 cal, 145P, 62F, 305C). */
-const DAYS = [
-  {name:"Mod training day", was:'new base plan \u2014 Sep 2026',
-   hint:"moderate training session",
-   meals:[M.preCrumpet2,M.postBanana,M.breakfast,M.morningSnack,M.lunch,M.afternoonSnack,M.dinnerMod,M.dessert]},
-  {name:"High training day", was:'new base plan \u2014 Sep 2026',
-   hint:">75 min and/or high intensity",
-   meals:[M.preCrumpet2,M.intra,M.postBagel,M.breakfast,M.morningSnack,M.lunch,M.afternoonSnack,M.dinnerHigh,M.dessert]},
-  {name:"Rest day", was:'new base plan \u2014 Sep 2026',
-   hint:"no training",
-   meals:[M.breakfast,M.morningSnack,M.lunchRest,M.afternoonSnack,M.dinnerRest,M.dessert]},
-];
+/* ---------- this person's plan, through the shared engine ----------
+   Their dislikes leave every swap group and their brand products join the
+   named group, for them alone (plans/<id>.js). */
+const { ingAmountG, ingMacros, mealMacros, ingLabel, computeSwaps, mealSwapAlts } =
+  createEngine(FOODS, POOLS, {dislikes: PLAN.dislikes, brands: PLAN.brands});
+const DAYS = PLAN.days.map(d => ({...d, meals: d.meals.map(k => PLAN.meals[k])}));
 
 /* ---------- presentation ---------- */
 const STYLE = {
@@ -360,13 +215,23 @@ function render(day){
     const m = mealMacros(meal);
     return [a[0]+m[0], a[1]+m[1], a[2]+m[2], a[3]+m[3]];
   }, [0,0,0,0]);
-  titleEl.textContent = `${day.name} — Day Total`;
-  subEl.textContent = day.archived ? `${day.hint} · ${day.was}` : `${day.hint} · ${day.was}`;
-  statsEl.innerHTML = `
+  if (PLAN.header === 'targets'){
+    /* the dietitian's targets, verbatim, under a fixed "Day Targets" heading */
+    const T = PLAN.targets;
+    statsEl.innerHTML = `
+    <div class="stat cal"><b>~${T.cal}</b><span>cal</span></div>
+    <div class="stat pro"><b>${T.p}g</b><span>protein</span></div>
+    <div class="stat fat"><b>${T.f}g</b><span>fat</span></div>
+    <div class="stat carb"><b>${T.c}g</b><span>carbs</span></div>`;
+  } else {
+    titleEl.textContent = `${day.name} — Day Total`;
+    subEl.textContent = `${day.hint} · ${day.was}`;
+    statsEl.innerHTML = `
     <div class="stat cal"><b>${R(t[0])}</b><span>cal</span></div>
     <div class="stat pro"><b>${R(t[1])}g</b><span>protein</span></div>
     <div class="stat fat"><b>${R(t[2])}g</b><span>fat</span></div>
     <div class="stat carb"><b>${R(t[3])}g</b><span>carbs</span></div>`;
+  }
 
   mealsEl.innerHTML = day.meals.map((meal, mi)=>{
     const s = STYLE[meal.type];
@@ -460,8 +325,12 @@ function buildTabs(){
   });
 }
 
-active=Math.min(+(localStorage.getItem('mealday2')||0),DAYS.length-1);
-buildTabs();
+/* one day → no tabs; a fixed targets header → no day sub-line */
+if (PLAN.header === 'targets') subEl.remove();
+if (DAYS.length > 1){
+  active=Math.min(+(localStorage.getItem('mealday2')||0),DAYS.length-1);
+  buildTabs();
+} else tabsEl.parentElement.remove();
 render(DAYS[active]);
 
 /* ---------- auto-update: fetch fresh version, reload if stale (offline-safe) ---------- */
